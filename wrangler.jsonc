@@ -1,0 +1,40 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "invitaciones",
+	"main": "src/worker/index.ts",
+	"compatibility_date": "2026-01-01",
+	"compatibility_flags": ["nodejs_compat"],
+	"vars": {
+		"APP_URL": "http://localhost:8787"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "invitaciones-db",
+			"database_id": "00000000-0000-0000-0000-000000000001",
+			"migrations_dir": "migrations"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "ASSETS",
+			"bucket_name": "invitaciones-assets"
+		}
+	],
+	"assets": {
+		"not_found_handling": "single-page-application",
+		"run_worker_first": [
+			"/api",
+			"/api/*",
+			"/i",
+			"/i/*",
+			"/media",
+			"/media/*",
+			"!/assets",
+			"!/assets/*"
+		]
+	},
+	"observability": {
+		"enabled": true
+	}
+}

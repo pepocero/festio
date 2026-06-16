@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"jsx": "react-jsx",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"resolveJsonModule": true,
+		"allowJs": true,
+		"noEmit": true,
+		"isolatedModules": true,
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"types": ["@cloudflare/workers-types"],
+		"paths": {
+			"@shared/*": ["./src/shared/*"]
+		}
+	},
+	"include": ["src", "worker-configuration.d.ts", "vite.config.ts"],
+	"exclude": ["test"]
+}

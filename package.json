@@ -1,0 +1,40 @@
+{
+	"name": "invitaciones",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "wrangler dev",
+		"deploy": "wrangler deploy",
+		"build": "vite build",
+		"cf-typegen": "wrangler types",
+		"db:migrate": "wrangler d1 migrations apply invitaciones-db --local",
+		"db:migrate:remote": "wrangler d1 migrations apply invitaciones-db --remote",
+		"db:seed": "wrangler d1 execute invitaciones-db --local --file=./migrations/0002_seed_templates.sql",
+		"db:seed:remote": "wrangler d1 execute invitaciones-db --remote --file=./migrations/0002_seed_templates.sql",
+		"test": "vitest"
+	},
+	"dependencies": {
+		"bcryptjs": "^3.0.2",
+		"hono": "^4.7.5",
+		"jose": "^6.0.10",
+		"nanoid": "^5.1.5",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"react-router-dom": "^7.4.0",
+		"zod": "^3.24.2"
+	},
+	"devDependencies": {
+		"@cloudflare/vite-plugin": "^1.0.5",
+		"@cloudflare/vitest-pool-workers": "^0.12.4",
+		"@cloudflare/workers-types": "^4.20250317.0",
+		"@types/bcryptjs": "^2.4.6",
+		"@types/react": "^19.0.12",
+		"@types/react-dom": "^19.0.4",
+		"@vitejs/plugin-react": "^4.3.4",
+		"typescript": "^5.8.2",
+		"vite": "^6.2.2",
+		"vitest": "~3.2.0",
+		"wrangler": "^4.0.0"
+	}
+}
