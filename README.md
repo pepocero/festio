@@ -1,4 +1,4 @@
-# Invitaciones Digitales
+# Festio
 
 Aplicación web para crear, personalizar y compartir invitaciones digitales (cumpleaños, bodas, cenas y eventos). Desplegada en **Cloudflare Workers** con **D1**, **R2** y autenticación **JWT**.
 
@@ -22,7 +22,7 @@ Aplicación web para crear, personalizar y compartir invitaciones digitales (cum
 npm install
 
 # Crear base de datos D1 en Cloudflare (solo la primera vez)
-wrangler d1 create invitaciones-db
+wrangler d1 create festio-db
 # Copiar el database_id en wrangler.jsonc
 
 # Aplicar migraciones y seed en local
@@ -30,29 +30,62 @@ npm run db:migrate
 npm run db:seed
 
 # Crear bucket R2 (solo la primera vez)
-wrangler r2 bucket create invitaciones-assets
+wrangler r2 bucket create festio-assets
 
 # Secret JWT (producción)
 wrangler secret put JWT_SECRET
 
-# Desarrollo
+# Desarrollo (requiere build previo)
+npm run build
 npm run dev
 ```
 
-Abre `http://localhost:8787`. El archivo `.dev.vars` incluye un JWT de desarrollo.
+Abre `http://localhost:8787`. Copia `.dev.vars.example` a `.dev.vars` y configura `JWT_SECRET`.
 
-## Despliegue
+## Despliegue en Cloudflare
 
-1. Actualiza `database_id` en `wrangler.jsonc` con el ID real de D1.
-2. Configura `APP_URL` en `wrangler.jsonc` (vars) con tu dominio de Workers.
-3. Ejecuta migraciones remotas:
+**Producción:** https://festio.pepocero.workers.dev
+
+Festio es un **Worker full-stack** (API + SPA + SSR) con D1 y R2. No es un sitio estático de Pages; el despliegue correcto es con **Wrangler** o el workflow de GitHub incluido.
+
+### Infraestructura (ya creada en la cuenta)
+
+| Recurso | Nombre | ID / detalle |
+|---------|--------|----------------|
+| Worker | `festio` | https://festio.pepocero.workers.dev |
+| D1 | `festio-db` | `1e0c9006-49e9-4e57-9a2d-cb4cac26d072` |
+| R2 | `festio-assets` | binding `ASSETS` |
+| Secreto | `JWT_SECRET` | configurado en el Worker |
+
+### Despliegue automático (GitHub Actions)
+
+En el repositorio de GitHub → **Settings → Secrets and variables → Actions**, añade:
+
+| Secreto | Valor |
+|---------|--------|
+| `CLOUDFLARE_API_TOKEN` | Token con permisos *Workers Scripts*, *Workers R2*, *D1* ([crear token](https://dash.cloudflare.com/profile/api-tokens)) |
+| `CLOUDFLARE_ACCOUNT_ID` | `57c6750913a2c0db6a279da9658d402a` |
+
+Cada push a `main` ejecuta `.github/workflows/deploy.yml` (build + migraciones D1 + `wrangler deploy`).
+
+### Despliegue manual (CLI)
 
 ```bash
-npm run db:migrate:remote
-npm run db:seed:remote
-wrangler secret put JWT_SECRET
+npm run build
+npm run db:migrate:remote   # si hay migraciones nuevas
 npm run deploy
 ```
+
+### Conectar Git en el panel de Cloudflare (alternativa)
+
+**Workers & Pages** → **Create** → **Connect to Git** → repo `festio`.
+
+| Campo | Valor |
+|-------|--------|
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+
+Configura los mismos bindings D1/R2, `APP_URL` y `JWT_SECRET` en el proyecto.
 
 ## Estructura
 

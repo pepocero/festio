@@ -7,7 +7,7 @@ import {
 import { describe, it, expect } from 'vitest';
 import worker from '../src/worker/index';
 
-describe('Invitaciones worker', () => {
+describe('Festio worker', () => {
 	it('/api/health responde ok (unit style)', async () => {
 		const request = new Request<unknown, IncomingRequestCfProperties>('http://example.com/api/health');
 		const ctx = createExecutionContext();

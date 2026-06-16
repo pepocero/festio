@@ -1,24 +1,25 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "invitaciones",
+	"name": "festio",
 	"main": "src/worker/index.ts",
 	"compatibility_date": "2026-01-01",
 	"compatibility_flags": ["nodejs_compat"],
+	"account_id": "57c6750913a2c0db6a279da9658d402a",
 	"vars": {
-		"APP_URL": "http://localhost:8787"
+		"APP_URL": "https://festio.pepocero.workers.dev"
 	},
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "invitaciones-db",
-			"database_id": "00000000-0000-0000-0000-000000000001",
+			"database_name": "festio-db",
+			"database_id": "1e0c9006-49e9-4e57-9a2d-cb4cac26d072",
 			"migrations_dir": "migrations"
 		}
 	],
 	"r2_buckets": [
 		{
 			"binding": "ASSETS",
-			"bucket_name": "invitaciones-assets"
+			"bucket_name": "festio-assets"
 		}
 	],
 	"assets": {
@@ -36,5 +37,6 @@
 	},
 	"observability": {
 		"enabled": true
-	}
+	},
+	"workers_dev": true
 }

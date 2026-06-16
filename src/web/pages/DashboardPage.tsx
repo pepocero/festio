@@ -46,8 +46,8 @@ export function DashboardPage() {
 		<div className="app-layout">
 			<header className="app-header">
 				<div>
-					<h1>Mis invitaciones</h1>
-					<p className="text-muted">{user?.email}</p>
+					<h1>Festio</h1>
+					<p className="text-muted">Mis invitaciones · {user?.email}</p>
 				</div>
 				<div className="header-actions">
 					<Link to="/app/new" className="btn btn-primary">

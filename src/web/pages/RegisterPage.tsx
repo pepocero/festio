@@ -36,8 +36,8 @@ export function RegisterPage() {
 	return (
 		<div className="auth-page">
 			<div className="auth-card">
-				<h1>Crear cuenta</h1>
-				<p className="auth-subtitle">Empieza a crear tus invitaciones</p>
+				<h1>Festio</h1>
+				<p className="auth-subtitle">Crea tu cuenta y empieza a diseñar invitaciones</p>
 				<form onSubmit={(e) => void handleSubmit(e)}>
 					{error && <div className="error-banner">{error}</div>}
 					<label>

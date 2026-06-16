@@ -1,5 +1,5 @@
 {
-	"name": "invitaciones",
+	"name": "festio",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
@@ -8,10 +8,10 @@
 		"deploy": "wrangler deploy",
 		"build": "vite build",
 		"cf-typegen": "wrangler types",
-		"db:migrate": "wrangler d1 migrations apply invitaciones-db --local",
-		"db:migrate:remote": "wrangler d1 migrations apply invitaciones-db --remote",
-		"db:seed": "wrangler d1 execute invitaciones-db --local --file=./migrations/0002_seed_templates.sql",
-		"db:seed:remote": "wrangler d1 execute invitaciones-db --remote --file=./migrations/0002_seed_templates.sql",
+		"db:migrate": "wrangler d1 migrations apply festio-db --local",
+		"db:migrate:remote": "wrangler d1 migrations apply festio-db --remote",
+		"db:seed": "wrangler d1 execute festio-db --local --file=./migrations/0002_seed_templates.sql",
+		"db:seed:remote": "wrangler d1 execute festio-db --remote --file=./migrations/0002_seed_templates.sql",
 		"test": "vitest"
 	},
 	"dependencies": {

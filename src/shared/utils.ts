@@ -30,11 +30,11 @@ export function buildIcsDataUrl(params: {
 	const ics = [
 		'BEGIN:VCALENDAR',
 		'VERSION:2.0',
-		'PRODID:-//Invitaciones//ES',
+		'PRODID:-//Festio//ES',
 		'CALSCALE:GREGORIAN',
 		'METHOD:PUBLISH',
 		'BEGIN:VEVENT',
-		`UID:${crypto.randomUUID()}@invitaciones`,
+		`UID:${crypto.randomUUID()}@festio`,
 		`DTSTAMP:${toIcsDate(new Date().toISOString())}`,
 		`DTSTART:${toIcsDate(params.startIso)}`,
 		`DTEND:${toIcsDate(params.endIso)}`,

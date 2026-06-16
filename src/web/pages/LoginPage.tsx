@@ -27,7 +27,7 @@ export function LoginPage() {
 	return (
 		<div className="auth-page">
 			<div className="auth-card">
-				<h1>Invitaciones</h1>
+				<h1>Festio</h1>
 				<p className="auth-subtitle">Crea y comparte invitaciones digitales</p>
 				<form onSubmit={(e) => void handleSubmit(e)}>
 					{error && <div className="error-banner">{error}</div>}
