@@ -55,9 +55,6 @@ export function renderPublicInvitationHtml(params: {
 				})
 			: null;
 
-	const shareText = encodeURIComponent(`¡Estás invitado/a! ${title}\n${publicUrl}`);
-	const whatsappUrl = `https://wa.me/?text=${shareText}`;
-	const emailUrl = `mailto:?subject=${encodeURIComponent(title)}&body=${shareText}`;
 	const layoutClass = `layout-${config.layout}`;
 	const hostFontSize = resolveHostFontSize(config);
 	const bgPos = resolveBackgroundPosition(config);
@@ -163,20 +160,11 @@ export function renderPublicInvitationHtml(params: {
       transition: transform 0.15s, opacity 0.15s;
     }
     .btn:active { transform: scale(0.98); }
-    .btn-primary { background: ${config.colors.primary}; color: #fff; }
-    .btn-secondary { background: ${config.colors.background}; color: ${config.colors.text}; border: 2px solid ${config.colors.primary}33; }
-    .btn-whatsapp { background: #25d366; color: #fff; }
     .btn-calendar { background: #4285f4; color: #fff; }
     .layout-elegant .card { border: 2px solid ${config.colors.secondary}; }
     .layout-modern .card { border-radius: 0.5rem; }
     .layout-classic .card-hero h1 { font-size: 2.25rem; }
     .footer { margin-top: 1.5rem; font-size: 0.8rem; opacity: 0.5; text-align: center; }
-    #copy-toast {
-      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
-      background: #111; color: #fff; padding: 0.75rem 1.25rem; border-radius: 2rem;
-      font-size: 0.9rem; opacity: 0; transition: opacity 0.3s; pointer-events: none;
-    }
-    #copy-toast.show { opacity: 1; }
   </style>
 </head>
 <body class="${layoutClass}">
@@ -190,44 +178,13 @@ export function renderPublicInvitationHtml(params: {
         <p class="date">📅 ${escapeHtml(eventDateFormatted)}</p>
         ${invitation.location ? `<p class="location">📍 ${escapeHtml(invitation.location)}</p>` : ''}
         ${invitation.message ? `<p class="message">${escapeHtml(invitation.message)}</p>` : ''}
-        <div class="actions">
-          ${calendarUrl ? `<a class="btn btn-calendar" href="${escapeHtml(calendarUrl)}" target="_blank" rel="noopener noreferrer">📅 Añadir a Google Calendar</a>` : ''}
-          <a class="btn btn-whatsapp" href="${whatsappUrl}" target="_blank" rel="noopener">Compartir por WhatsApp</a>
-          <button class="btn btn-secondary" type="button" id="copy-btn">Copiar enlace</button>
-          <a class="btn btn-secondary" href="${emailUrl}">Enviar por email</a>
-          <button class="btn btn-primary" type="button" id="share-btn" hidden>Compartir</button>
-        </div>
+        ${calendarUrl ? `<div class="actions">
+          <a class="btn btn-calendar" href="${escapeHtml(calendarUrl)}" target="_blank" rel="noopener noreferrer">📅 Añadir a Google Calendar</a>
+        </div>` : ''}
       </div>
     </article>
     <p class="footer">Invitación digital</p>
   </div>
-  <div id="copy-toast">Enlace copiado</div>
-  <script>
-    const publicUrl = ${JSON.stringify(publicUrl)};
-    const shareTitle = ${JSON.stringify(title)};
-    const shareText = ${JSON.stringify(`¡Estás invitado/a! ${title}`)};
-
-    document.getElementById('copy-btn')?.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(publicUrl);
-        const toast = document.getElementById('copy-toast');
-        toast?.classList.add('show');
-        setTimeout(() => toast?.classList.remove('show'), 2000);
-      } catch (e) {
-        prompt('Copia este enlace:', publicUrl);
-      }
-    });
-
-    if (navigator.share) {
-      const shareBtn = document.getElementById('share-btn');
-      if (shareBtn) {
-        shareBtn.hidden = false;
-        shareBtn.addEventListener('click', () => {
-          navigator.share({ title: shareTitle, text: shareText, url: publicUrl }).catch(() => {});
-        });
-      }
-    }
-  </script>
 </body>
 </html>`;
 }
