@@ -1,4 +1,4 @@
-import { useRef, useState, type PointerEvent } from 'react';
+import { forwardRef, useRef, useState, type PointerEvent } from 'react';
 import type { TemplateConfig } from '../lib/api';
 import { getHeroBackgroundStyle, getInvitationBackgroundUrl } from '../lib/invitationStyle';
 
@@ -16,6 +16,8 @@ interface PreviewProps {
 	/** Permite arrastrar la imagen de fondo en el editor */
 	editableBackground?: boolean;
 	onBackgroundPositionChange?: (x: number, y: number) => void;
+	/** Oculta controles del editor al exportar como imagen */
+	exportMode?: boolean;
 }
 
 const COLOR_LABELS: Record<keyof TemplateConfig['colors'], string> = {
@@ -25,7 +27,8 @@ const COLOR_LABELS: Record<keyof TemplateConfig['colors'], string> = {
 	text: 'Texto',
 };
 
-export function InvitationPreview({
+export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(function InvitationPreview(
+	{
 	title,
 	hostName,
 	eventDate,
@@ -36,7 +39,10 @@ export function InvitationPreview({
 	previewImageUrl,
 	editableBackground = false,
 	onBackgroundPositionChange,
-}: PreviewProps) {
+	exportMode = false,
+	},
+	ref,
+) {
 	const heroRef = useRef<HTMLDivElement>(null);
 	const [dragging, setDragging] = useState(false);
 
@@ -44,7 +50,7 @@ export function InvitationPreview({
 
 	const { primary, secondary, background, text } = config.colors;
 	const hostFontSize = config.hostFontSize ?? DEFAULT_HOST_FONT_SIZE;
-	const canDrag = editableBackground && !!bgUrl && !!onBackgroundPositionChange;
+	const canDrag = !exportMode && editableBackground && !!bgUrl && !!onBackgroundPositionChange;
 
 	const formattedDate = eventDate
 		? new Intl.DateTimeFormat('es-ES', {
@@ -89,6 +95,7 @@ export function InvitationPreview({
 
 	return (
 		<div
+			ref={ref}
 			className={`preview-card layout-${config.layout}`}
 			style={{
 				borderColor: config.layout === 'elegant' ? secondary : undefined,
@@ -138,6 +145,6 @@ export function InvitationPreview({
 			</div>
 		</div>
 	);
-}
+});
 
 export { COLOR_LABELS };

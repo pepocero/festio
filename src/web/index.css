@@ -100,6 +100,11 @@ a:not(.btn):hover {
 	color: #fff;
 }
 
+.btn-whatsapp-image {
+	background: #128c7e;
+	color: #fff;
+}
+
 .btn-view-invitation {
 	background: linear-gradient(135deg, var(--color-primary) 0%, #ec4899 100%);
 	color: #fff;
@@ -402,6 +407,24 @@ a:not(.btn):hover {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.5rem;
+}
+
+.invitation-image-export-root {
+	position: fixed;
+	left: -10000px;
+	top: 0;
+	width: 480px;
+	pointer-events: none;
+	visibility: hidden;
+	z-index: -1;
+}
+
+.invitation-image-export-root .preview-hero {
+	min-height: 220px;
+}
+
+.invitation-image-export-root .preview-hero h2 {
+	font-size: 2rem;
 }
 
 /* Templates */

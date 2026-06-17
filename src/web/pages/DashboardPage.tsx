@@ -138,7 +138,19 @@ export function DashboardPage() {
 								</div>
 								{inv.public_url && inv.status === 'published' && (
 									<div className="card-share">
-										<ShareButtons url={inv.public_url} title={inv.title} />
+										<ShareButtons
+											url={inv.public_url}
+											title={inv.title}
+											invitation={{
+												title: inv.title,
+												hostName: inv.host_name,
+												eventDate: inv.event_date,
+												location: inv.location,
+												message: inv.message,
+												config: inv.config,
+												timezone: inv.timezone,
+											}}
+										/>
 									</div>
 								)}
 							</div>

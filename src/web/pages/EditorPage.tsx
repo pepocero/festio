@@ -29,6 +29,7 @@ export function EditorPage() {
 	const { id } = useParams<{ id: string }>();
 	const fileRef = useRef<HTMLInputElement>(null);
 	const blobUrlRef = useRef<string | null>(null);
+	const previewRef = useRef<HTMLDivElement>(null);
 	const isMobile = useIsMobile();
 
 	const [invitation, setInvitation] = useState<Invitation | null>(null);
@@ -241,7 +242,11 @@ export function EditorPage() {
 							Ver invitación
 						</a>
 						<p className="public-url text-muted">{invitation.public_url}</p>
-						<ShareButtons url={invitation.public_url} title={title} />
+						<ShareButtons
+							url={invitation.public_url}
+							title={title}
+							previewRef={previewRef}
+						/>
 					</div>
 				)}
 
@@ -249,6 +254,7 @@ export function EditorPage() {
 					<aside className="editor-preview">
 						<h2 className="editor-preview-title">Vista previa</h2>
 						<InvitationPreview
+							ref={previewRef}
 							title={title}
 							hostName={hostName}
 							eventDate={previewEventDate}
