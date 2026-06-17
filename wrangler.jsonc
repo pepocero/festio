@@ -6,7 +6,7 @@
 	"compatibility_flags": ["nodejs_compat"],
 	"account_id": "57c6750913a2c0db6a279da9658d402a",
 	"vars": {
-		"APP_URL": "https://festio.pepocero.workers.dev"
+		"APP_URL": "https://festio.carlinitools.com"
 	},
 	"d1_databases": [
 		{
