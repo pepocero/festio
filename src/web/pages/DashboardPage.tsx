@@ -111,9 +111,9 @@ export function DashboardPage() {
 												href={inv.public_url}
 												target="_blank"
 												rel="noopener noreferrer"
-												className="btn btn-ghost btn-sm"
+												className="btn btn-view-invitation btn-sm"
 											>
-												Ver
+												Ver invitación
 											</a>
 										</>
 									)}

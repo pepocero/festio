@@ -228,11 +228,15 @@ export function EditorPage() {
 				{invitation.public_url && (
 					<div className="publish-box">
 						<h3>Tu invitación está publicada</h3>
-						<p className="public-url">
-							<a href={invitation.public_url} target="_blank" rel="noopener noreferrer">
-								{invitation.public_url}
-							</a>
-						</p>
+						<a
+							href={invitation.public_url}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="btn btn-view-invitation"
+						>
+							Ver invitación
+						</a>
+						<p className="public-url text-muted">{invitation.public_url}</p>
 						<ShareButtons url={invitation.public_url} title={title} />
 					</div>
 				)}

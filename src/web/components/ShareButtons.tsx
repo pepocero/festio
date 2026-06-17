@@ -4,7 +4,7 @@ interface ShareButtonsProps {
 }
 
 export function ShareButtons({ url, title }: ShareButtonsProps) {
-	const shareText = encodeURIComponent(`¡Estás invitado/a! ${title} — ${url}`);
+	const shareText = encodeURIComponent(`¡Estás invitado/a! ${title}\n${url}`);
 	const whatsappUrl = `https://wa.me/?text=${shareText}`;
 	const emailUrl = `mailto:?subject=${encodeURIComponent(title)}&body=${shareText}`;
 

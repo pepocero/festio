@@ -69,6 +69,28 @@ export function googleFontsLink(config: TemplateConfig): string {
 	return families ? `https://fonts.googleapis.com/css2?${families}&display=swap` : '';
 }
 
+export function resolveOgImage(params: {
+	appUrl: string;
+	customBackgroundKey?: string | null;
+	backgroundImage?: string | null;
+}): { url: string; type: string } {
+	if (params.customBackgroundKey) {
+		const ext = params.customBackgroundKey.split('.').pop()?.toLowerCase();
+		const type =
+			ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+		return { url: `${params.appUrl}/media/${params.customBackgroundKey}`, type };
+	}
+
+	const bg = params.backgroundImage ?? '';
+	if (/\.(jpe?g|png|webp)(\?|$)/i.test(bg)) {
+		const url = bg.startsWith('/') ? `${params.appUrl}${bg}` : bg;
+		const type = /\.png/i.test(bg) ? 'image/png' : /\.webp/i.test(bg) ? 'image/webp' : 'image/jpeg';
+		return { url, type };
+	}
+
+	return { url: `${params.appUrl}/og-default.png`, type: 'image/png' };
+}
+
 export function escapeHtml(text: string): string {
 	return text
 		.replace(/&/g, '&amp;')

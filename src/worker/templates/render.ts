@@ -10,6 +10,7 @@ import {
 	parseTemplateConfig,
 	resolveBackgroundPosition,
 	resolveHostFontSize,
+	resolveOgImage,
 } from '@shared/utils';
 
 export function renderPublicInvitationHtml(params: {
@@ -34,7 +35,11 @@ export function renderPublicInvitationHtml(params: {
 		invitation.message ||
 		`${invitation.host_name ? `Organiza: ${invitation.host_name}. ` : ''}Te invitamos a nuestro evento.`;
 
-	const ogImage = bgUrl || `${appUrl}/templates/og-default.svg`;
+	const og = resolveOgImage({
+		appUrl,
+		customBackgroundKey: config.customBackgroundKey,
+		backgroundImage: config.backgroundImage,
+	});
 	const fontsLink = googleFontsLink(config);
 
 	const eventDateFormatted = formatEventDate(invitation.event_date, invitation.timezone);
@@ -50,7 +55,7 @@ export function renderPublicInvitationHtml(params: {
 				})
 			: null;
 
-	const shareText = encodeURIComponent(`¡Estás invitado/a! ${title} — ${publicUrl}`);
+	const shareText = encodeURIComponent(`¡Estás invitado/a! ${title}\n${publicUrl}`);
 	const whatsappUrl = `https://wa.me/?text=${shareText}`;
 	const emailUrl = `mailto:?subject=${encodeURIComponent(title)}&body=${shareText}`;
 	const layoutClass = `layout-${config.layout}`;
@@ -65,11 +70,22 @@ export function renderPublicInvitationHtml(params: {
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(description)}" />
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Festio" />
+  <meta property="og:locale" content="es_ES" />
   <meta property="og:title" content="${escapeHtml(title)}" />
   <meta property="og:description" content="${escapeHtml(description)}" />
-  <meta property="og:image" content="${escapeHtml(ogImage)}" />
   <meta property="og:url" content="${escapeHtml(publicUrl)}" />
+  <meta property="og:image" content="${escapeHtml(og.url)}" />
+  <meta property="og:image:secure_url" content="${escapeHtml(og.url)}" />
+  <meta property="og:image:type" content="${escapeHtml(og.type)}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="${escapeHtml(title)}" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${escapeHtml(title)}" />
+  <meta name="twitter:description" content="${escapeHtml(description)}" />
+  <meta name="twitter:image" content="${escapeHtml(og.url)}" />
+  <link rel="canonical" href="${escapeHtml(publicUrl)}" />
   ${fontsLink ? `<link rel="stylesheet" href="${fontsLink}" />` : ''}
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
