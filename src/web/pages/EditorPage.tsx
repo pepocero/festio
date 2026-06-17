@@ -287,14 +287,16 @@ export function EditorPage() {
 								</select>
 							</label>
 							<DateTimeField
-								label="Fecha y hora de inicio"
+								label="Fecha de Inicio"
+								timeLabel="Hora de inicio"
 								date={startDate}
 								time={startTime}
 								onDateChange={setStartDate}
 								onTimeChange={setStartTime}
 							/>
 							<DateTimeField
-								label="Fecha y hora de fin"
+								label="Fecha de Fin"
+								timeLabel="Hora de fin"
 								date={endDate}
 								time={endTime}
 								onDateChange={setEndDate}

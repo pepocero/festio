@@ -672,19 +672,13 @@ a:not(.btn):hover {
 	}
 
 	.datetime-date,
+	.datetime-time,
 	.clock-picker {
 		min-width: 0;
 		width: 100%;
 	}
 
 	.clock-picker-panel {
-		position: fixed;
-		left: 50%;
-		transform: translateX(-50%);
-		bottom: max(1rem, env(safe-area-inset-bottom));
-		top: auto;
-		width: min(300px, calc(100vw - 2rem));
-		max-height: 70dvh;
 		overflow-y: auto;
 	}
 
@@ -805,6 +799,23 @@ a:not(.btn):hover {
 	font-family: inherit;
 }
 
+.datetime-time {
+	flex: 1;
+	min-width: 0;
+	width: 100%;
+}
+
+.datetime-time input[type='time'] {
+	width: 100%;
+	padding: 0.625rem 0.875rem;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	font-size: 1rem;
+	font-family: inherit;
+	min-height: 2.75rem;
+	background: var(--color-surface);
+}
+
 .sr-only {
 	position: absolute;
 	width: 1px;
@@ -854,11 +865,7 @@ a:not(.btn):hover {
 }
 
 .clock-picker-panel {
-	position: absolute;
-	top: calc(100% + 0.5rem);
-	left: 0;
-	z-index: 50;
-	width: min(280px, 90vw);
+	z-index: 1000;
 	padding: 1rem;
 	background: var(--color-surface);
 	border: 1px solid var(--color-border);

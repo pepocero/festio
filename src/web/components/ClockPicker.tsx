@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ClockPickerProps {
 	value: string;
@@ -34,6 +35,51 @@ export function ClockPicker({ value, onChange, label = 'Hora' }: ClockPickerProp
 	const [draftHour, setDraftHour] = useState(hour);
 	const [draftMinute, setDraftMinute] = useState(minute);
 	const containerRef = useRef<HTMLDivElement>(null);
+	const triggerRef = useRef<HTMLButtonElement>(null);
+	const [panelStyle, setPanelStyle] = useState<CSSProperties>({});
+
+	useLayoutEffect(() => {
+		if (!open || !triggerRef.current) return;
+
+		const updatePosition = () => {
+			const rect = triggerRef.current!.getBoundingClientRect();
+			const isMobile = window.innerWidth < 768;
+
+			if (isMobile) {
+				setPanelStyle({
+					position: 'fixed',
+					left: '50%',
+					transform: 'translateX(-50%)',
+					bottom: 'max(1rem, env(safe-area-inset-bottom))',
+					top: 'auto',
+					width: 'min(300px, calc(100vw - 2rem))',
+					maxHeight: '70dvh',
+					zIndex: 1000,
+				});
+			} else {
+				const panelWidth = 280;
+				const left = Math.min(
+					Math.max(8, rect.left),
+					window.innerWidth - panelWidth - 8,
+				);
+				setPanelStyle({
+					position: 'fixed',
+					top: rect.bottom + 8,
+					left,
+					width: panelWidth,
+					zIndex: 1000,
+				});
+			}
+		};
+
+		updatePosition();
+		window.addEventListener('resize', updatePosition);
+		window.addEventListener('scroll', updatePosition, true);
+		return () => {
+			window.removeEventListener('resize', updatePosition);
+			window.removeEventListener('scroll', updatePosition, true);
+		};
+	}, [open]);
 
 	useEffect(() => {
 		const { hour: h, minute: m } = parseTime(value);
@@ -44,13 +90,22 @@ export function ClockPicker({ value, onChange, label = 'Hora' }: ClockPickerProp
 	useEffect(() => {
 		if (!open) return;
 		const onClickOutside = (e: MouseEvent) => {
-			if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-				setOpen(false);
-				setMode('hour');
+			const target = e.target as Node;
+			if (
+				containerRef.current?.contains(target) ||
+				(target instanceof Element && target.closest('.clock-picker-panel'))
+			) {
+				return;
 			}
+			setOpen(false);
+			setMode('hour');
 		};
 		document.addEventListener('mousedown', onClickOutside);
-		return () => document.removeEventListener('mousedown', onClickOutside);
+		document.addEventListener('touchstart', onClickOutside);
+		return () => {
+			document.removeEventListener('mousedown', onClickOutside);
+			document.removeEventListener('touchstart', onClickOutside);
+		};
 	}, [open]);
 
 	const display = value || 'Seleccionar hora';
@@ -79,6 +134,7 @@ export function ClockPicker({ value, onChange, label = 'Hora' }: ClockPickerProp
 		<div className="clock-picker" ref={containerRef}>
 			<span className="clock-picker-label">{label}</span>
 			<button
+				ref={triggerRef}
 				type="button"
 				className="clock-picker-trigger"
 				onClick={() => {
@@ -93,87 +149,94 @@ export function ClockPicker({ value, onChange, label = 'Hora' }: ClockPickerProp
 				{display}
 			</button>
 
-			{open && (
-				<div className="clock-picker-panel" role="dialog" aria-label="Seleccionar hora">
-					<div className="clock-picker-header">
-						<span className="clock-picker-mode">
-							{mode === 'hour' ? 'Selecciona la hora' : 'Selecciona los minutos'}
-						</span>
-						<span className="clock-picker-digital">
-							{formatTime(draftHour, draftMinute)}
-						</span>
-					</div>
-					<svg className="clock-face" viewBox="0 0 240 240" role="img" aria-hidden>
-						<circle cx={cx} cy={cy} r={radius + 8} className="clock-face-bg" />
-						<line
-							x1={cx}
-							y1={cy}
-							x2={cx + (radius - 28) * Math.cos((handAngle * Math.PI) / 180)}
-							y2={cy + (radius - 28) * Math.sin((handAngle * Math.PI) / 180)}
-							className="clock-hand"
-						/>
-						<circle cx={cx} cy={cy} r={6} className="clock-center" />
-						{mode === 'hour'
-							? HOURS.map((h) => {
-									const pos = hourOnCircle(h, 24, radius - 20, cx, cy);
-									const selected = h === draftHour;
-									return (
-										<g key={h}>
-											<circle
-												cx={pos.x}
-												cy={pos.y}
-												r={selected ? 18 : 14}
-												className={selected ? 'clock-num-bg selected' : 'clock-num-bg'}
-												onClick={() => handleHourSelect(h)}
-											/>
-											<text
-												x={pos.x}
-												y={pos.y + 5}
-												textAnchor="middle"
-												className={selected ? 'clock-num selected' : 'clock-num'}
-												onClick={() => handleHourSelect(h)}
-											>
-												{h}
-											</text>
-										</g>
-									);
-								})
-							: MINUTES.map((m, i) => {
-									const pos = hourOnCircle(i, 12, radius - 20, cx, cy);
-									const selected = m === draftMinute;
-									return (
-										<g key={m}>
-											<circle
-												cx={pos.x}
-												cy={pos.y}
-												r={selected ? 18 : 14}
-												className={selected ? 'clock-num-bg selected' : 'clock-num-bg'}
-												onClick={() => handleMinuteSelect(m)}
-											/>
-											<text
-												x={pos.x}
-												y={pos.y + 5}
-												textAnchor="middle"
-												className={selected ? 'clock-num selected' : 'clock-num'}
-												onClick={() => handleMinuteSelect(m)}
-											>
-												{String(m).padStart(2, '0')}
-											</text>
-										</g>
-									);
-								})}
-					</svg>
-					{mode === 'minute' && (
-						<button
-							type="button"
-							className="btn btn-ghost btn-sm clock-back"
-							onClick={() => setMode('hour')}
-						>
-							← Cambiar hora
-						</button>
-					)}
-				</div>
-			)}
+			{open &&
+				createPortal(
+					<div
+						className="clock-picker-panel"
+						style={panelStyle}
+						role="dialog"
+						aria-label="Seleccionar hora"
+					>
+						<div className="clock-picker-header">
+							<span className="clock-picker-mode">
+								{mode === 'hour' ? 'Selecciona la hora' : 'Selecciona los minutos'}
+							</span>
+							<span className="clock-picker-digital">
+								{formatTime(draftHour, draftMinute)}
+							</span>
+						</div>
+						<svg className="clock-face" viewBox="0 0 240 240" role="img" aria-hidden>
+							<circle cx={cx} cy={cy} r={radius + 8} className="clock-face-bg" />
+							<line
+								x1={cx}
+								y1={cy}
+								x2={cx + (radius - 28) * Math.cos((handAngle * Math.PI) / 180)}
+								y2={cy + (radius - 28) * Math.sin((handAngle * Math.PI) / 180)}
+								className="clock-hand"
+							/>
+							<circle cx={cx} cy={cy} r={6} className="clock-center" />
+							{mode === 'hour'
+								? HOURS.map((h) => {
+										const pos = hourOnCircle(h, 24, radius - 20, cx, cy);
+										const selected = h === draftHour;
+										return (
+											<g key={h}>
+												<circle
+													cx={pos.x}
+													cy={pos.y}
+													r={selected ? 18 : 14}
+													className={selected ? 'clock-num-bg selected' : 'clock-num-bg'}
+													onClick={() => handleHourSelect(h)}
+												/>
+												<text
+													x={pos.x}
+													y={pos.y + 5}
+													textAnchor="middle"
+													className={selected ? 'clock-num selected' : 'clock-num'}
+													onClick={() => handleHourSelect(h)}
+												>
+													{h}
+												</text>
+											</g>
+										);
+									})
+								: MINUTES.map((m, i) => {
+										const pos = hourOnCircle(i, 12, radius - 20, cx, cy);
+										const selected = m === draftMinute;
+										return (
+											<g key={m}>
+												<circle
+													cx={pos.x}
+													cy={pos.y}
+													r={selected ? 18 : 14}
+													className={selected ? 'clock-num-bg selected' : 'clock-num-bg'}
+													onClick={() => handleMinuteSelect(m)}
+												/>
+												<text
+													x={pos.x}
+													y={pos.y + 5}
+													textAnchor="middle"
+													className={selected ? 'clock-num selected' : 'clock-num'}
+													onClick={() => handleMinuteSelect(m)}
+												>
+													{String(m).padStart(2, '0')}
+												</text>
+											</g>
+										);
+									})}
+						</svg>
+						{mode === 'minute' && (
+							<button
+								type="button"
+								className="btn btn-ghost btn-sm clock-back"
+								onClick={() => setMode('hour')}
+							>
+								← Cambiar hora
+							</button>
+						)}
+					</div>,
+					document.body,
+				)}
 		</div>
 	);
 }
