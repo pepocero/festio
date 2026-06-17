@@ -6,6 +6,24 @@ export function HomeIcon() {
 	);
 }
 
+export function BackArrowIcon() {
+	return (
+		<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+			<path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+		</svg>
+	);
+}
+
+export function HelpIcon() {
+	return (
+		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+			<circle cx="12" cy="12" r="10" />
+			<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" strokeLinecap="round" strokeLinejoin="round" />
+			<circle cx="12" cy="17" r="0.5" fill="currentColor" stroke="none" />
+		</svg>
+	);
+}
+
 export function LogOutIcon() {
 	return (
 		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>

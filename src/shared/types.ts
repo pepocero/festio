@@ -29,6 +29,10 @@ export interface TemplateConfig {
 	heroGradient?: boolean;
 	/** Filtro de color sobre la imagen de fondo */
 	heroOverlay?: boolean;
+	/** Posición horizontal del título en la cabecera (0–100 %) */
+	titlePositionX?: number;
+	/** Posición vertical del título en la cabecera (0–100 %) */
+	titlePositionY?: number;
 }
 
 export interface User {

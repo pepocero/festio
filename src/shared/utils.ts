@@ -1,11 +1,26 @@
 import type { TemplateConfig } from './types';
 
-const GOOGLE_FONTS = new Set([
-	'Playfair Display',
-	'Montserrat',
-	'Dancing Script',
-	'Lora',
-]);
+export const AVAILABLE_FONTS = [
+	{ name: 'Playfair Display', weights: '400;600;700' },
+	{ name: 'Montserrat', weights: '400;600;700' },
+	{ name: 'Dancing Script', weights: '400;600;700' },
+	{ name: 'Lora', weights: '400;600' },
+	{ name: 'Bangers', weights: null },
+	{ name: 'Rubik Distressed', weights: null },
+	{ name: 'Great Vibes', weights: null },
+] as const;
+
+export const FONT_OPTIONS = AVAILABLE_FONTS.map((font) => font.name);
+
+export const FONT_DISPLAY_NAMES: Record<string, string> = {
+	Bangers: 'Bangers (cómic)',
+	'Rubik Distressed': 'Rubik Distressed (desgastada)',
+	'Great Vibes': 'Great Vibes (cursiva)',
+};
+
+const GOOGLE_FONTS = new Set<string>(FONT_OPTIONS);
+
+export const DEFAULT_TITLE_POSITION = { x: 50, y: 88 };
 
 export function buildGoogleCalendarUrl(params: {
 	title: string;
@@ -64,6 +79,8 @@ export function mergeConfig(base: TemplateConfig, override?: Partial<TemplateCon
 		hostFontSize: override.hostFontSize ?? base.hostFontSize,
 		heroGradient: override.heroGradient ?? base.heroGradient,
 		heroOverlay: override.heroOverlay ?? base.heroOverlay,
+		titlePositionX: override.titlePositionX ?? base.titlePositionX,
+		titlePositionY: override.titlePositionY ?? base.titlePositionY,
 	};
 }
 
@@ -126,7 +143,12 @@ export function buildCardHeroBackgroundCss(
 export function googleFontsLink(config: TemplateConfig): string {
 	const families = [config.fonts.title, config.fonts.body]
 		.filter((f, i, arr) => arr.indexOf(f) === i && GOOGLE_FONTS.has(f))
-		.map((f) => `family=${encodeURIComponent(f)}:wght@400;600;700`)
+		.map((f) => {
+			const meta = AVAILABLE_FONTS.find((font) => font.name === f);
+			const encoded = encodeURIComponent(f);
+			if (!meta?.weights) return `family=${encoded}`;
+			return `family=${encoded}:wght@${meta.weights}`;
+		})
 		.join('&');
 	return families ? `https://fonts.googleapis.com/css2?${families}&display=swap` : '';
 }
@@ -194,6 +216,13 @@ export function resolveBackgroundPosition(config: TemplateConfig): { x: number; 
 	return {
 		x: config.backgroundPositionX ?? 50,
 		y: config.backgroundPositionY ?? 50,
+	};
+}
+
+export function resolveTitlePosition(config: TemplateConfig): { x: number; y: number } {
+	return {
+		x: config.titlePositionX ?? DEFAULT_TITLE_POSITION.x,
+		y: config.titlePositionY ?? DEFAULT_TITLE_POSITION.y,
 	};
 }
 

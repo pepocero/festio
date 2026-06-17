@@ -4,7 +4,7 @@ import { api, type Invitation } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { getHeroBackgroundStyle } from '../lib/invitationStyle';
 import { ShareButtons } from '../components/ShareButtons';
-import { CopyLinkIcon, EditIcon, HomeIcon, LogOutIcon, TrashIcon, ViewIcon } from '../components/icons';
+import { CopyLinkIcon, EditIcon, HelpIcon, HomeIcon, LogOutIcon, TrashIcon, ViewIcon } from '../components/icons';
 
 export function DashboardPage() {
 	const { user, logout } = useAuth();
@@ -57,6 +57,9 @@ export function DashboardPage() {
 					<Link to="/app/new" className="btn btn-primary btn-new-invitation">
 						<span className="btn-new-invitation-short" aria-hidden>+</span>
 						<span className="btn-new-invitation-label">Nueva invitación</span>
+					</Link>
+					<Link to="/ayuda" className="btn btn-ghost btn-icon" aria-label="Ayuda" title="Ayuda">
+						<HelpIcon />
 					</Link>
 					<button
 						type="button"

@@ -6,6 +6,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { NewInvitationPage } from './pages/NewInvitationPage';
 import { EditorPage } from './pages/EditorPage';
 import { LandingPage } from './pages/LandingPage';
+import { HelpPage } from './pages/HelpPage';
 import type { ReactNode } from 'react';
 
 function HomeRoute() {
@@ -32,6 +33,7 @@ export default function App() {
 	return (
 		<Routes>
 			<Route path="/" element={<HomeRoute />} />
+			<Route path="/ayuda" element={<HelpPage />} />
 			<Route
 				path="/login"
 				element={

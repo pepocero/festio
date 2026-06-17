@@ -13,6 +13,7 @@ import {
 	resolveElegantBorderColor,
 	resolveHostFontSize,
 	resolveOgImage,
+	resolveTitlePosition,
 } from '@shared/utils';
 
 export function renderPublicInvitationHtml(params: {
@@ -60,6 +61,7 @@ export function renderPublicInvitationHtml(params: {
 	const layoutClass = `layout-${config.layout}`;
 	const hostFontSize = resolveHostFontSize(config);
 	const bgPos = resolveBackgroundPosition(config);
+	const titlePos = resolveTitlePosition(config);
 	const elegantBorder = resolveElegantBorderColor(config);
 	const heroBackgroundCss = bgUrl
 		? buildCardHeroBackgroundCss(config, escapeHtml(bgUrl), bgPos)
@@ -115,13 +117,19 @@ export function renderPublicInvitationHtml(params: {
       background: #fff;
     }
     .card-hero {
+      position: relative;
       min-height: 220px;
       ${heroBackgroundCss}
-      display: flex;
-      align-items: flex-end;
-      padding: 1.5rem;
+      padding: 0;
     }
     .card-hero h1 {
+      position: absolute;
+      left: ${titlePos.x}%;
+      top: ${titlePos.y}%;
+      transform: translate(-50%, -50%);
+      max-width: calc(100% - 2rem);
+      margin: 0;
+      text-align: center;
       font-family: '${config.fonts.title}', serif;
       font-size: 2rem;
       color: #fff;

@@ -38,6 +38,8 @@ export interface TemplateConfig {
 	hostFontSize?: number;
 	heroGradient?: boolean;
 	heroOverlay?: boolean;
+	titlePositionX?: number;
+	titlePositionY?: number;
 }
 
 export interface Template {

@@ -1,6 +1,45 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 
+const CUSTOMIZATION_TYPES = [
+	{
+		icon: '🎨',
+		title: 'Colores',
+		description:
+			'Cambia el color de la cabecera, el fondo de la tarjeta y el texto. Toca cada muestra en Personalización.',
+	},
+	{
+		icon: '🌈',
+		title: 'Degradado y filtro',
+		description:
+			'Activa degradado en la cabecera o un filtro de color sobre tu imagen para que el título se lea mejor.',
+	},
+	{
+		icon: '✍️',
+		title: 'Fuentes',
+		description:
+			'Elige tipografía para el título y el cuerpo: clásicas, cursivas, cómic o estilo desgastado.',
+	},
+	{
+		icon: '📍',
+		title: 'Posición del título',
+		description:
+			'Coloca el título donde quieras en la cabecera con arrastre o deslizadores.',
+	},
+	{
+		icon: '🖼️',
+		title: 'Fondos e imágenes',
+		description:
+			'Galería de fondos incluidos o sube tu propia foto. Encuadra la imagen como prefieras.',
+	},
+	{
+		icon: '✨',
+		title: 'Estilo de tarjeta',
+		description:
+			'Clásico, moderno o elegante: el diseño completo de la invitación cambia de un solo toque.',
+	},
+];
+
 const FEATURES = [
 	{
 		icon: '🎨',
@@ -45,6 +84,9 @@ export function LandingPage() {
 						Festio
 					</Link>
 					<nav className="landing-nav" aria-label="Acceso">
+						<Link to="/ayuda" className="btn btn-ghost btn-sm">
+							Ayuda
+						</Link>
 						{user ? (
 							<>
 								<Link to="/app" className="btn btn-secondary btn-sm">
@@ -123,6 +165,32 @@ export function LandingPage() {
 				</div>
 			</section>
 
+			<section className="landing-section landing-section--alt" id="personalizacion">
+				<div className="landing-section-inner">
+					<h2 className="landing-section-title">Personaliza cada detalle de tu tarjeta</h2>
+					<p className="landing-section-lead">
+						En el editor, abre la sección <strong>Personalización</strong> para cambiar
+						colores, fuentes, fondos y más. La vista previa se actualiza al instante.
+					</p>
+					<div className="landing-customization-grid">
+						{CUSTOMIZATION_TYPES.map((item) => (
+							<article key={item.title} className="landing-customization-card">
+								<span className="landing-feature-icon" aria-hidden="true">
+									{item.icon}
+								</span>
+								<h3>{item.title}</h3>
+								<p>{item.description}</p>
+							</article>
+						))}
+					</div>
+					<p className="landing-section-cta">
+						<Link to="/ayuda" className="btn btn-secondary">
+							Ver guía completa de personalización
+						</Link>
+					</p>
+				</div>
+			</section>
+
 			<section className="landing-section" id="caracteristicas">
 				<div className="landing-section-inner">
 					<h2 className="landing-section-title">Todo lo que necesitas para tu evento</h2>
@@ -192,6 +260,9 @@ export function LandingPage() {
 			<footer className="landing-footer">
 				<p className="landing-footer-brand">Festio</p>
 				<p className="landing-footer-copy">Invitaciones digitales · Hecho para celebrar</p>
+				<p className="landing-footer-links">
+					<Link to="/ayuda">Ayuda y personalización</Link>
+				</p>
 				<p className="landing-footer-credit">
 					App creada por{' '}
 					<a href="https://carlinitools.com" target="_blank" rel="noopener noreferrer">

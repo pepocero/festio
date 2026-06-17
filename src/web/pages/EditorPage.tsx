@@ -10,9 +10,9 @@ import { DateTimeField, dateTimeToIso } from '../components/DateTimeField';
 import { CollapsibleSection } from '../components/CollapsibleSection';
 import { ShareButtons } from '../components/ShareButtons';
 import { BackgroundPicker } from '../components/BackgroundPicker';
-import { HomeIcon } from '../components/icons';
+import { HomeIcon, BackArrowIcon } from '../components/icons';
 
-const FONT_OPTIONS = ['Playfair Display', 'Montserrat', 'Dancing Script', 'Lora'];
+import { FONT_DISPLAY_NAMES, FONT_OPTIONS } from '@shared/utils';
 const HOST_FONT_SIZES = [
 	{ value: 12, label: 'Pequeño (12 px)' },
 	{ value: 15, label: 'Normal (15 px)' },
@@ -54,6 +54,8 @@ export function EditorPage() {
 	const [message, setMessage] = useState('');
 	const [config, setConfig] = useState<TemplateConfig | null>(null);
 	const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+	const [moveTitleMode, setMoveTitleMode] = useState(false);
+	const [moveBackgroundMode, setMoveBackgroundMode] = useState(false);
 
 	useEffect(() => {
 		return () => {
@@ -88,6 +90,12 @@ export function EditorPage() {
 			.catch((err) => setError(err instanceof Error ? err.message : 'Error'))
 			.finally(() => setLoading(false));
 	}, [id]);
+
+	useEffect(() => {
+		if (!config?.backgroundImage && !config?.customBackgroundKey && !previewImageUrl) {
+			setMoveBackgroundMode(false);
+		}
+	}, [config?.backgroundImage, config?.customBackgroundKey, previewImageUrl]);
 
 	const updateConfig = (partial: Partial<TemplateConfig>) => {
 		setConfig((prev) => (prev ? { ...prev, ...partial } : prev));
@@ -211,19 +219,23 @@ export function EditorPage() {
 		updateConfig({ backgroundPositionX: x, backgroundPositionY: y });
 	};
 
+	const handleTitlePositionChange = (x: number, y: number) => {
+		updateConfig({ titlePositionX: x, titlePositionY: y });
+	};
+
 	return (
 		<div className="app-layout editor-layout">
 			<header className="app-header editor-header">
 				<div className="editor-header-row">
 					<Link to="/app" className="btn btn-ghost btn-icon" aria-label="Volver" title="Volver">
-						<span aria-hidden>←</span>
-					</Link>
-					<Link to="/" className="btn btn-secondary btn-icon" aria-label="Página principal" title="Página principal">
-						<HomeIcon />
+						<BackArrowIcon />
 					</Link>
 					<h1>Editar invitación</h1>
 				</div>
 				<div className="header-actions editor-header-actions">
+					<Link to="/" className="btn btn-secondary btn-icon" aria-label="Página principal" title="Página principal">
+						<HomeIcon />
+					</Link>
 					<button
 						type="button"
 						className="btn btn-secondary"
@@ -280,8 +292,10 @@ export function EditorPage() {
 							config={config}
 							timezone={timezone}
 							previewImageUrl={previewImageUrl}
-							editableBackground={hasBackgroundImage}
+							editableBackground={hasBackgroundImage && moveBackgroundMode}
 							onBackgroundPositionChange={handleBackgroundPositionChange}
+							editableTitlePosition={moveTitleMode}
+							onTitlePositionChange={handleTitlePositionChange}
 						/>
 					</aside>
 
@@ -353,6 +367,12 @@ export function EditorPage() {
 						</CollapsibleSection>
 
 						<CollapsibleSection title="Personalización" defaultOpen={!isMobile}>
+							<p className="editor-help-link text-muted">
+								¿Cómo cambiar colores, fuentes o la imagen?{' '}
+								<Link to="/ayuda" target="_blank" rel="noopener noreferrer">
+									Ver guía de ayuda
+								</Link>
+							</p>
 							<div className="color-grid">
 								<ColorSwatchField
 									id="color-primary"
@@ -387,7 +407,7 @@ export function EditorPage() {
 									checked={config.heroGradient ?? false}
 									onChange={(e) => updateConfig({ heroGradient: e.target.checked })}
 								/>
-								Usar degradado en la cabecera
+								<span className="toggle-option-text">Degradado cabecera</span>
 							</label>
 							{(config.customBackgroundKey || previewImageUrl || config.backgroundImage) && (
 								<label className="toggle-option">
@@ -396,7 +416,7 @@ export function EditorPage() {
 										checked={config.heroOverlay ?? false}
 										onChange={(e) => updateConfig({ heroOverlay: e.target.checked })}
 									/>
-									Aplicar filtro de color sobre la imagen
+									<span className="toggle-option-text">Filtro color en imagen</span>
 								</label>
 							)}
 							<label>
@@ -406,8 +426,8 @@ export function EditorPage() {
 									onChange={(e) => updateFonts('title', e.target.value)}
 								>
 									{FONT_OPTIONS.map((f) => (
-										<option key={f} value={f}>
-											{f}
+										<option key={f} value={f} style={{ fontFamily: `'${f}', serif` }}>
+											{FONT_DISPLAY_NAMES[f] ?? f}
 										</option>
 									))}
 								</select>
@@ -419,76 +439,87 @@ export function EditorPage() {
 									onChange={(e) => updateFonts('body', e.target.value)}
 								>
 									{FONT_OPTIONS.map((f) => (
-										<option key={f} value={f}>
-											{f}
+										<option key={f} value={f} style={{ fontFamily: `'${f}', serif` }}>
+											{FONT_DISPLAY_NAMES[f] ?? f}
 										</option>
 									))}
 								</select>
 							</label>
-							<label>
-								Estilo de diseño
-								<select
-									value={config.layout}
-									onChange={(e) =>
-										updateConfig({ layout: e.target.value as TemplateConfig['layout'] })
-									}
-								>
-									<option value="classic">Clásico</option>
-									<option value="modern">Moderno</option>
-									<option value="elegant">Elegante</option>
-								</select>
-							</label>
-							<div className={`upload-section${hasBackgroundImage ? '' : ' editor-form-last'}`}>
-								<label>Imagen de fondo</label>
-								<BackgroundPicker
-									config={config}
-									previewImageUrl={previewImageUrl}
-									onSelect={selectStockBackground}
-									onClear={clearBackgroundImage}
-								/>
-								{hasBackgroundImage && (
-									<p className="upload-status text-muted">
-										{hasCustomBackground
-											? 'Usando tu foto personalizada'
-											: 'Usando imagen de fondo seleccionada'}
-									</p>
-								)}
-								<input
-									ref={fileRef}
-									type="file"
-									accept="image/jpeg,image/png,image/webp"
-									hidden
-									onChange={(e) => {
-										const file = e.target.files?.[0];
-										if (file) void handleUpload(file);
-									}}
-								/>
-								<div className="upload-actions">
-									<button
-										type="button"
-										className="btn btn-secondary"
-										disabled={uploading}
-										onClick={() => fileRef.current?.click()}
-									>
-										{uploading ? 'Subiendo...' : hasBackgroundImage ? 'Cambiar foto' : 'Subir foto'}
-									</button>
-									{hasBackgroundImage && (
+							<div className="bg-position-controls">
+								<p className="bg-position-label">Posición del título</p>
+								<p className="bg-position-hint">
+									Activa el modo y arrastra el título en la vista previa, o usa los controles
+								</p>
+								<label className="toggle-option">
+									<input
+										type="checkbox"
+										checked={moveTitleMode}
+										onChange={(e) => setMoveTitleMode(e.target.checked)}
+									/>
+									<span className="toggle-option-text">Activar mover título</span>
+								</label>
+								<label>
+									Horizontal ({config.titlePositionX ?? 50}%)
+									<input
+										type="range"
+										min={0}
+										max={100}
+										value={config.titlePositionX ?? 50}
+										onChange={(e) =>
+											updateConfig({ titlePositionX: Number(e.target.value) })
+										}
+									/>
+								</label>
+								<label>
+									Vertical ({config.titlePositionY ?? 88}%)
+									<input
+										type="range"
+										min={0}
+										max={100}
+										value={config.titlePositionY ?? 88}
+										onChange={(e) =>
+											updateConfig({ titlePositionY: Number(e.target.value) })
+										}
+									/>
+								</label>
+								<div className="bg-position-presets">
+									{[
+										{ label: 'Centro', x: 50, y: 50 },
+										{ label: 'Arriba', x: 50, y: 18 },
+										{ label: 'Abajo', x: 50, y: 88 },
+										{ label: 'Izq.', x: 18, y: 50 },
+										{ label: 'Der.', x: 82, y: 50 },
+									].map((preset) => (
 										<button
+											key={preset.label}
 											type="button"
 											className="btn btn-ghost btn-sm"
-											onClick={clearBackgroundImage}
+											onClick={() =>
+												updateConfig({
+													titlePositionX: preset.x,
+													titlePositionY: preset.y,
+												})
+											}
 										>
-											Quitar imagen
+											{preset.label}
 										</button>
-									)}
+									))}
 								</div>
 							</div>
 							{hasBackgroundImage && (
-								<div className="bg-position-controls editor-form-last">
+								<div className="bg-position-controls">
 									<p className="bg-position-label">Posición de la imagen</p>
 									<p className="bg-position-hint">
-										Arrastra sobre la vista previa o usa los controles
+										Activa el modo y arrastra sobre la vista previa, o usa los controles
 									</p>
+									<label className="toggle-option">
+										<input
+											type="checkbox"
+											checked={moveBackgroundMode}
+											onChange={(e) => setMoveBackgroundMode(e.target.checked)}
+										/>
+										<span className="toggle-option-text">Activar mover fondo</span>
+									</label>
 									<label>
 										Horizontal ({config.backgroundPositionX ?? 50}%)
 										<input
@@ -538,12 +569,73 @@ export function EditorPage() {
 									</div>
 								</div>
 							)}
+							<label>
+								Estilo de diseño
+								<select
+									value={config.layout}
+									onChange={(e) =>
+										updateConfig({ layout: e.target.value as TemplateConfig['layout'] })
+									}
+								>
+									<option value="classic">Clásico</option>
+									<option value="modern">Moderno</option>
+									<option value="elegant">Elegante</option>
+								</select>
+							</label>
+							<div className="upload-section editor-form-last">
+								<label>Imagen de fondo</label>
+								<BackgroundPicker
+									config={config}
+									previewImageUrl={previewImageUrl}
+									onSelect={selectStockBackground}
+									onClear={clearBackgroundImage}
+								/>
+								{hasBackgroundImage && (
+									<p className="upload-status text-muted">
+										{hasCustomBackground
+											? 'Usando tu foto personalizada'
+											: 'Usando imagen de fondo seleccionada'}
+									</p>
+								)}
+								<input
+									ref={fileRef}
+									type="file"
+									accept="image/jpeg,image/png,image/webp"
+									hidden
+									onChange={(e) => {
+										const file = e.target.files?.[0];
+										if (file) void handleUpload(file);
+									}}
+								/>
+								<div className="upload-actions">
+									<button
+										type="button"
+										className="btn btn-secondary"
+										disabled={uploading}
+										onClick={() => fileRef.current?.click()}
+									>
+										{uploading ? 'Subiendo...' : hasBackgroundImage ? 'Cambiar foto' : 'Subir foto'}
+									</button>
+									{hasBackgroundImage && (
+										<button
+											type="button"
+											className="btn btn-ghost btn-sm"
+											onClick={clearBackgroundImage}
+										>
+											Quitar imagen
+										</button>
+									)}
+								</div>
+							</div>
 						</CollapsibleSection>
 					</form>
 				</div>
 			</main>
 
 			<div className="editor-mobile-bar" aria-label="Acciones">
+				<Link to="/" className="btn btn-secondary btn-icon" aria-label="Página principal" title="Página principal">
+					<HomeIcon />
+				</Link>
 				<button
 					type="button"
 					className="btn btn-secondary"
