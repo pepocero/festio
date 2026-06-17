@@ -4,6 +4,7 @@ import { api, type Invitation } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { getHeroBackgroundStyle } from '../lib/invitationStyle';
 import { ShareButtons } from '../components/ShareButtons';
+import { HomeIcon, LogOutIcon } from '../components/icons';
 
 export function DashboardPage() {
 	const { user, logout } = useAuth();
@@ -49,15 +50,22 @@ export function DashboardPage() {
 					<h1>Festio</h1>
 					<p className="text-muted">Mis invitaciones · {user?.email}</p>
 				</div>
-				<div className="header-actions">
-					<Link to="/" className="btn btn-secondary">
-						Página principal
+				<div className="header-actions header-actions--compact">
+					<Link to="/" className="btn btn-secondary btn-icon" aria-label="Página principal" title="Página principal">
+						<HomeIcon />
 					</Link>
-					<Link to="/app/new" className="btn btn-primary">
-						+ Nueva invitación
+					<Link to="/app/new" className="btn btn-primary btn-new-invitation">
+						<span className="btn-new-invitation-short" aria-hidden>+</span>
+						<span className="btn-new-invitation-label">Nueva invitación</span>
 					</Link>
-					<button type="button" className="btn btn-ghost" onClick={() => void logout().then(() => navigate('/'))}>
-						Salir
+					<button
+						type="button"
+						className="btn btn-ghost btn-icon"
+						aria-label="Salir"
+						title="Salir"
+						onClick={() => void logout().then(() => navigate('/'))}
+					>
+						<LogOutIcon />
 					</button>
 				</div>
 			</header>

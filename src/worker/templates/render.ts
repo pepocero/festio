@@ -138,7 +138,7 @@ export function renderPublicInvitationHtml(params: {
       border-left: 4px solid ${config.colors.primary};
     }
     .location { margin: 0.75rem 0; opacity: 0.9; }
-    .message { margin-top: 1rem; font-style: italic; opacity: 0.85; }
+    .message { margin-top: 1rem; font-style: italic; opacity: 0.85; white-space: pre-line; }
     .actions {
       display: flex;
       flex-direction: column;

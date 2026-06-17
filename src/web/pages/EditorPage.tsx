@@ -7,6 +7,7 @@ import { COLOR_LABELS, InvitationPreview } from '../components/InvitationPreview
 import { DateTimeField, dateTimeToIso } from '../components/DateTimeField';
 import { CollapsibleSection } from '../components/CollapsibleSection';
 import { ShareButtons } from '../components/ShareButtons';
+import { HomeIcon } from '../components/icons';
 
 const FONT_OPTIONS = ['Playfair Display', 'Montserrat', 'Dancing Script', 'Lora'];
 const HOST_FONT_SIZES = [
@@ -195,16 +196,16 @@ export function EditorPage() {
 	return (
 		<div className="app-layout editor-layout">
 			<header className="app-header editor-header">
-				<div className="editor-header-top">
-					<Link to="/app" className="back-link">
-						← Volver
+				<div className="editor-header-row">
+					<Link to="/app" className="btn btn-ghost btn-icon" aria-label="Volver" title="Volver">
+						<span aria-hidden>←</span>
+					</Link>
+					<Link to="/" className="btn btn-secondary btn-icon" aria-label="Página principal" title="Página principal">
+						<HomeIcon />
 					</Link>
 					<h1>Editar invitación</h1>
 				</div>
 				<div className="header-actions editor-header-actions">
-					<Link to="/" className="btn btn-secondary btn-sm">
-						Página principal
-					</Link>
 					<button
 						type="button"
 						className="btn btn-secondary"
