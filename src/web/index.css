@@ -100,9 +100,51 @@ a:not(.btn):hover {
 	color: #fff;
 }
 
-.btn-whatsapp-image {
-	background: #128c7e;
-	color: #fff;
+.share-menu {
+	position: relative;
+}
+
+.share-menu-trigger {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.share-menu-dropdown {
+	position: absolute;
+	top: calc(100% + 0.35rem);
+	left: 0;
+	min-width: 180px;
+	background: #fff;
+	border: 1px solid var(--color-border);
+	border-radius: 0.6rem;
+	box-shadow: var(--shadow);
+	padding: 0.25rem;
+	z-index: 20;
+}
+
+.share-menu-item {
+	width: 100%;
+	display: block;
+	background: transparent;
+	border: none;
+	text-align: left;
+	font-family: inherit;
+	font-size: 0.9rem;
+	color: var(--color-text);
+	padding: 0.55rem 0.65rem;
+	border-radius: 0.45rem;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.share-menu-item:hover {
+	background: var(--color-bg);
+}
+
+.share-menu-item:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
 }
 
 .btn-view-invitation {
@@ -397,6 +439,12 @@ a:not(.btn):hover {
 	gap: 0.5rem;
 }
 
+.card-actions .btn-icon.btn-sm {
+	padding: 0.45rem;
+	min-width: 2.25rem;
+	min-height: 2.25rem;
+}
+
 .card-share {
 	margin-top: 1rem;
 	padding-top: 1rem;
@@ -407,6 +455,7 @@ a:not(.btn):hover {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.5rem;
+	align-items: center;
 }
 
 .invitation-image-export-root {
@@ -806,9 +855,9 @@ a:not(.btn):hover {
 		min-width: 2.5rem;
 	}
 
-	.share-buttons .btn {
-		flex: 1 1 calc(50% - 0.25rem);
-		min-height: 2.75rem;
+	.share-buttons .btn-icon {
+		flex: 0 0 auto;
+		min-height: 2.5rem;
 	}
 
 	.auth-card {

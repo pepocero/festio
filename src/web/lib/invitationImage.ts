@@ -165,6 +165,11 @@ function downloadBlob(blob: Blob, filename: string): void {
 	URL.revokeObjectURL(objectUrl);
 }
 
+function isLikelyMobileDevice(): boolean {
+	if (typeof navigator === 'undefined') return false;
+	return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+}
+
 export async function shareInvitationPng(params: {
 	blob: Blob;
 	title: string;
@@ -177,13 +182,26 @@ export async function shareInvitationPng(params: {
 		? `¡Estás invitado/a! ${title}\n${url}`
 		: `¡Estás invitado/a! ${title}`;
 
-	if (typeof navigator.share === 'function' && navigator.canShare?.({ files: [file] })) {
-		await navigator.share({
-			title,
-			text: shareText,
-			files: [file],
-		});
-		return 'shared';
+	// En desktop (Brave/Chromium) puede fallar por "user gesture" tras el render asíncrono.
+	// Preferimos compartir archivo solo en móvil y, si falla, degradar a descarga.
+	const canNativeShareFile =
+		isLikelyMobileDevice() &&
+		typeof navigator.share === 'function' &&
+		navigator.canShare?.({ files: [file] });
+
+	if (canNativeShareFile) {
+		try {
+			await navigator.share({
+				title,
+				text: shareText,
+				files: [file],
+			});
+			return 'shared';
+		} catch (error) {
+			if (error instanceof Error && error.name === 'AbortError') {
+				throw error;
+			}
+		}
 	}
 
 	downloadBlob(blob, filename);

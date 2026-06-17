@@ -4,7 +4,7 @@ import { api, type Invitation } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { getHeroBackgroundStyle } from '../lib/invitationStyle';
 import { ShareButtons } from '../components/ShareButtons';
-import { HomeIcon, LogOutIcon } from '../components/icons';
+import { CopyLinkIcon, EditIcon, HomeIcon, LogOutIcon, TrashIcon, ViewIcon } from '../components/icons';
 
 export function DashboardPage() {
 	const { user, logout } = useAuth();
@@ -106,34 +106,45 @@ export function DashboardPage() {
 									</p>
 								)}
 								<div className="card-actions">
-									<Link to={`/app/edit/${inv.id}`} className="btn btn-secondary btn-sm">
-										Editar
+									<Link
+										to={`/app/edit/${inv.id}`}
+										className="btn btn-secondary btn-sm btn-icon"
+										aria-label="Editar"
+										title="Editar"
+									>
+										<EditIcon />
 									</Link>
 									{inv.public_url && (
 										<>
 											<button
 												type="button"
-												className="btn btn-secondary btn-sm"
+												className="btn btn-secondary btn-sm btn-icon"
+												aria-label="Copiar enlace"
+												title="Copiar enlace"
 												onClick={() => void copyLink(inv.public_url!)}
 											>
-												Copiar enlace
+												<CopyLinkIcon />
 											</button>
 											<a
 												href={inv.public_url}
 												target="_blank"
 												rel="noopener noreferrer"
-												className="btn btn-view-invitation btn-sm"
+												className="btn btn-view-invitation btn-sm btn-icon"
+												aria-label="Ver invitación"
+												title="Ver invitación"
 											>
-												Ver invitación
+												<ViewIcon />
 											</a>
 										</>
 									)}
 									<button
 										type="button"
-										className="btn btn-danger btn-sm"
+										className="btn btn-danger btn-sm btn-icon"
+										aria-label="Eliminar"
+										title="Eliminar"
 										onClick={() => void handleDelete(inv.id)}
 									>
-										Eliminar
+										<TrashIcon />
 									</button>
 								</div>
 								{inv.public_url && inv.status === 'published' && (

@@ -19,13 +19,25 @@ const invitations = new Hono<{ Bindings: Env; Variables: AuthVariables }>();
 
 invitations.use('*', requireAuth);
 
+function resolveAppUrl(c: Parameters<typeof invitations.get>[1] extends (ctx: infer T) => any ? T : never): string {
+	const requestOrigin = new URL(c.req.url).origin;
+	const appOrigin = new URL(c.env.APP_URL).origin;
+
+	if (requestOrigin.startsWith('http://localhost:') || requestOrigin.startsWith('http://127.0.0.1:')) {
+		return requestOrigin;
+	}
+
+	return appOrigin;
+}
+
 invitations.get('/', async (c) => {
+	const appUrl = resolveAppUrl(c);
 	const items = await listInvitationsByUser(c.env.DB, c.get('userId'));
 	return c.json({
 		invitations: items.map((inv) => ({
 			...inv,
 			config: JSON.parse(inv.config),
-			public_url: inv.public_slug ? `${c.env.APP_URL}/i/${inv.public_slug}` : null,
+			public_url: inv.public_slug ? `${appUrl}/i/${inv.public_slug}` : null,
 		})),
 	});
 });
@@ -55,18 +67,20 @@ invitations.post('/', async (c) => {
 });
 
 invitations.get('/:id', async (c) => {
+	const appUrl = resolveAppUrl(c);
 	const inv = await findInvitationById(c.env.DB, c.req.param('id'), c.get('userId'));
 	if (!inv) return c.json({ error: 'Invitación no encontrada' }, 404);
 	return c.json({
 		invitation: {
 			...inv,
 			config: JSON.parse(inv.config),
-			public_url: inv.public_slug ? `${c.env.APP_URL}/i/${inv.public_slug}` : null,
+			public_url: inv.public_slug ? `${appUrl}/i/${inv.public_slug}` : null,
 		},
 	});
 });
 
 invitations.patch('/:id', async (c) => {
+	const appUrl = resolveAppUrl(c);
 	const body = await c.req.json().catch(() => null);
 	const parsed = updateInvitationSchema.safeParse(body);
 	if (!parsed.success) {
@@ -97,7 +111,7 @@ invitations.patch('/:id', async (c) => {
 		invitation: {
 			...updated,
 			config: JSON.parse(updated!.config),
-			public_url: updated!.public_slug ? `${c.env.APP_URL}/i/${updated!.public_slug}` : null,
+			public_url: updated!.public_slug ? `${appUrl}/i/${updated!.public_slug}` : null,
 		},
 	});
 });
@@ -109,6 +123,7 @@ invitations.delete('/:id', async (c) => {
 });
 
 invitations.post('/:id/publish', async (c) => {
+	const appUrl = resolveAppUrl(c);
 	const inv = await findInvitationById(c.env.DB, c.req.param('id'), c.get('userId'));
 	if (!inv) return c.json({ error: 'Invitación no encontrada' }, 404);
 
@@ -137,7 +152,7 @@ invitations.post('/:id/publish', async (c) => {
 		invitation: {
 			...updated,
 			config: JSON.parse(updated!.config),
-			public_url: `${c.env.APP_URL}/i/${slug}`,
+			public_url: `${appUrl}/i/${slug}`,
 		},
 	});
 });

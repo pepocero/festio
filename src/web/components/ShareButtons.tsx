@@ -1,7 +1,8 @@
-import { useRef, useState, type RefObject } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import type { TemplateConfig } from '../lib/api';
 import { captureInvitationAsPng, shareInvitationPng } from '../lib/invitationImage';
 import { InvitationPreview } from './InvitationPreview';
+import { EmailIcon, ShareIcon, WhatsAppIcon } from './icons';
 
 export interface InvitationShareImageData {
 	title: string;
@@ -22,20 +23,13 @@ interface ShareButtonsProps {
 
 export function ShareButtons({ url, title, invitation, previewRef }: ShareButtonsProps) {
 	const exportRef = useRef<HTMLDivElement>(null);
+	const whatsappMenuRef = useRef<HTMLDivElement>(null);
 	const [sharingImage, setSharingImage] = useState(false);
+	const [isWhatsappMenuOpen, setIsWhatsappMenuOpen] = useState(false);
 
 	const shareText = encodeURIComponent(`¡Estás invitado/a! ${title}\n${url}`);
 	const whatsappUrl = `https://wa.me/?text=${shareText}`;
 	const emailUrl = `mailto:?subject=${encodeURIComponent(title)}&body=${shareText}`;
-
-	const copyLink = async () => {
-		try {
-			await navigator.clipboard.writeText(url);
-			alert('Enlace copiado al portapapeles');
-		} catch {
-			prompt('Copia este enlace:', url);
-		}
-	};
 
 	const nativeShare = async () => {
 		if (navigator.share) {
@@ -82,31 +76,81 @@ export function ShareButtons({ url, title, invitation, previewRef }: ShareButton
 
 	const canShareImage = !!invitation || !!previewRef;
 
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (!whatsappMenuRef.current) return;
+			if (!whatsappMenuRef.current.contains(event.target as Node)) {
+				setIsWhatsappMenuOpen(false);
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, []);
+
 	return (
 		<>
 			<div className="share-buttons">
-				<a className="btn btn-whatsapp" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-					WhatsApp enlace
-				</a>
-				{canShareImage && (
+				<div className="share-menu" ref={whatsappMenuRef}>
 					<button
 						type="button"
-						className="btn btn-whatsapp-image"
-						disabled={sharingImage}
-						onClick={() => void shareAsImage()}
+						className="btn btn-whatsapp btn-icon share-menu-trigger"
+						aria-haspopup="menu"
+						aria-expanded={isWhatsappMenuOpen}
+						aria-label="WhatsApp"
+						title="WhatsApp"
+						onClick={() => setIsWhatsappMenuOpen((prev) => !prev)}
 					>
-						{sharingImage ? 'Generando…' : 'WhatsApp imagen'}
+						<WhatsAppIcon />
 					</button>
-				)}
-				<button type="button" className="btn btn-secondary" onClick={() => void copyLink()}>
-					Copiar enlace
-				</button>
-				<a className="btn btn-secondary" href={emailUrl}>
-					Email
+					{isWhatsappMenuOpen && (
+						<div className="share-menu-dropdown" role="menu" aria-label="Opciones de WhatsApp">
+							<a
+								className="share-menu-item"
+								role="menuitem"
+								href={whatsappUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								onClick={() => setIsWhatsappMenuOpen(false)}
+							>
+								Compartir enlace
+							</a>
+							{canShareImage && (
+								<button
+									type="button"
+									className="share-menu-item"
+									role="menuitem"
+									disabled={sharingImage}
+									onClick={() => {
+										setIsWhatsappMenuOpen(false);
+										void shareAsImage();
+									}}
+								>
+									{sharingImage ? 'Generando imagen…' : 'Compartir imagen'}
+								</button>
+							)}
+						</div>
+					)}
+				</div>
+				<a
+					className="btn btn-secondary btn-icon"
+					href={emailUrl}
+					aria-label="Email"
+					title="Email"
+				>
+					<EmailIcon />
 				</a>
 				{typeof navigator !== 'undefined' && 'share' in navigator && (
-					<button type="button" className="btn btn-primary" onClick={() => void nativeShare()}>
-						Compartir
+					<button
+						type="button"
+						className="btn btn-primary btn-icon"
+						aria-label="Compartir"
+						title="Compartir"
+						onClick={() => void nativeShare()}
+					>
+						<ShareIcon />
 					</button>
 				)}
 			</div>
