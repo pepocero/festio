@@ -166,6 +166,17 @@ export async function createAsset(
 		.run();
 }
 
+export async function deleteAssetByR2Key(
+	db: D1Database,
+	userId: string,
+	r2Key: string,
+): Promise<void> {
+	await db
+		.prepare('DELETE FROM assets WHERE user_id = ? AND r2_key = ?')
+		.bind(userId, r2Key)
+		.run();
+}
+
 export async function slugExists(db: D1Database, slug: string): Promise<boolean> {
 	const row = await db
 		.prepare('SELECT 1 FROM invitations WHERE public_slug = ?')

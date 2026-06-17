@@ -25,6 +25,10 @@ export interface TemplateConfig {
 	/** Posición vertical de la imagen de fondo (0–100 %) */
 	backgroundPositionY?: number;
 	hostFontSize?: number;
+	/** Degradado en cabecera (sin imagen) o en el filtro sobre imagen */
+	heroGradient?: boolean;
+	/** Filtro de color sobre la imagen de fondo */
+	heroOverlay?: boolean;
 }
 
 export interface User {

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type RefObject } from 'react';
+import { createPortal } from 'react-dom';
 import type { TemplateConfig } from '../lib/api';
 import { captureInvitationAsPng, shareInvitationPng } from '../lib/invitationImage';
 import { InvitationPreview } from './InvitationPreview';
@@ -24,8 +25,10 @@ interface ShareButtonsProps {
 export function ShareButtons({ url, title, invitation, previewRef }: ShareButtonsProps) {
 	const exportRef = useRef<HTMLDivElement>(null);
 	const whatsappMenuRef = useRef<HTMLDivElement>(null);
+	const triggerRef = useRef<HTMLButtonElement>(null);
 	const [sharingImage, setSharingImage] = useState(false);
 	const [isWhatsappMenuOpen, setIsWhatsappMenuOpen] = useState(false);
+	const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
 
 	const shareText = encodeURIComponent(`¡Estás invitado/a! ${title}\n${url}`);
 	const whatsappUrl = `https://wa.me/?text=${shareText}`;
@@ -76,25 +79,60 @@ export function ShareButtons({ url, title, invitation, previewRef }: ShareButton
 
 	const canShareImage = !!invitation || !!previewRef;
 
+	useLayoutEffect(() => {
+		if (!isWhatsappMenuOpen || !triggerRef.current) return;
+
+		const updatePosition = () => {
+			const rect = triggerRef.current!.getBoundingClientRect();
+			const panelWidth = 180;
+			const left = Math.min(Math.max(8, rect.left), window.innerWidth - panelWidth - 8);
+
+			setDropdownStyle({
+				position: 'fixed',
+				top: rect.bottom + 6,
+				left,
+				width: panelWidth,
+				zIndex: 1000,
+			});
+		};
+
+		updatePosition();
+		window.addEventListener('resize', updatePosition);
+		window.addEventListener('scroll', updatePosition, true);
+		return () => {
+			window.removeEventListener('resize', updatePosition);
+			window.removeEventListener('scroll', updatePosition, true);
+		};
+	}, [isWhatsappMenuOpen]);
+
 	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (!whatsappMenuRef.current) return;
-			if (!whatsappMenuRef.current.contains(event.target as Node)) {
-				setIsWhatsappMenuOpen(false);
+		if (!isWhatsappMenuOpen) return;
+
+		const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+			const target = event.target as Node;
+			if (
+				whatsappMenuRef.current?.contains(target) ||
+				(target instanceof Element && target.closest('.share-menu-dropdown'))
+			) {
+				return;
 			}
+			setIsWhatsappMenuOpen(false);
 		};
 
 		document.addEventListener('mousedown', handleClickOutside);
+		document.addEventListener('touchstart', handleClickOutside);
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
+			document.removeEventListener('touchstart', handleClickOutside);
 		};
-	}, []);
+	}, [isWhatsappMenuOpen]);
 
 	return (
 		<>
 			<div className="share-buttons">
 				<div className="share-menu" ref={whatsappMenuRef}>
 					<button
+						ref={triggerRef}
 						type="button"
 						className="btn btn-whatsapp btn-icon share-menu-trigger"
 						aria-haspopup="menu"
@@ -105,34 +143,41 @@ export function ShareButtons({ url, title, invitation, previewRef }: ShareButton
 					>
 						<WhatsAppIcon />
 					</button>
-					{isWhatsappMenuOpen && (
-						<div className="share-menu-dropdown" role="menu" aria-label="Opciones de WhatsApp">
-							<a
-								className="share-menu-item"
-								role="menuitem"
-								href={whatsappUrl}
-								target="_blank"
-								rel="noopener noreferrer"
-								onClick={() => setIsWhatsappMenuOpen(false)}
+					{isWhatsappMenuOpen &&
+						createPortal(
+							<div
+								className="share-menu-dropdown"
+								style={dropdownStyle}
+								role="menu"
+								aria-label="Opciones de WhatsApp"
 							>
-								Compartir enlace
-							</a>
-							{canShareImage && (
-								<button
-									type="button"
+								<a
 									className="share-menu-item"
 									role="menuitem"
-									disabled={sharingImage}
-									onClick={() => {
-										setIsWhatsappMenuOpen(false);
-										void shareAsImage();
-									}}
+									href={whatsappUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									onClick={() => setIsWhatsappMenuOpen(false)}
 								>
-									{sharingImage ? 'Generando imagen…' : 'Compartir imagen'}
-								</button>
-							)}
-						</div>
-					)}
+									Compartir enlace
+								</a>
+								{canShareImage && (
+									<button
+										type="button"
+										className="share-menu-item"
+										role="menuitem"
+										disabled={sharingImage}
+										onClick={() => {
+											setIsWhatsappMenuOpen(false);
+											void shareAsImage();
+										}}
+									>
+										{sharingImage ? 'Generando imagen…' : 'Compartir imagen'}
+									</button>
+								)}
+							</div>,
+							document.body,
+						)}
 				</div>
 				<a
 					className="btn btn-secondary btn-icon"

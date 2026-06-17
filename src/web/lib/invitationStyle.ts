@@ -1,6 +1,11 @@
 import type { CSSProperties } from 'react';
 import type { TemplateConfig } from './api';
-import { hexToRgba } from './datetime';
+import {
+	buildCardHeroBackgroundCss,
+	getHeroFillBackground,
+	getHeroImageOverlay,
+	resolveBackgroundPosition,
+} from '@shared/utils';
 
 export function getInvitationBackgroundUrl(
 	config: TemplateConfig,
@@ -8,7 +13,8 @@ export function getInvitationBackgroundUrl(
 ): string {
 	if (previewImageUrl) return previewImageUrl;
 	if (config.customBackgroundKey) return `/media/${config.customBackgroundKey}`;
-	return config.backgroundImage ?? '';
+	if (config.backgroundImage) return config.backgroundImage;
+	return '';
 }
 
 export function getHeroBackgroundStyle(
@@ -16,20 +22,29 @@ export function getHeroBackgroundStyle(
 	previewImageUrl?: string | null,
 ): CSSProperties {
 	const bgUrl = getInvitationBackgroundUrl(config, previewImageUrl);
-	const { primary, secondary } = config.colors;
-	const posX = config.backgroundPositionX ?? 50;
-	const posY = config.backgroundPositionY ?? 50;
+	const bgPos = resolveBackgroundPosition(config);
 
-	if (bgUrl) {
+	if (!bgUrl) {
+		return { background: getHeroFillBackground(config) };
+	}
+
+	const css = buildCardHeroBackgroundCss(config, bgUrl, bgPos);
+	const backgroundImage = css.match(/background-image:\s*([^;]+);/)?.[1];
+	const background = css.match(/^background:\s*([^;]+);/)?.[1];
+
+	if (backgroundImage) {
 		return {
-			backgroundImage: `linear-gradient(${hexToRgba(primary, 0.55)}, ${hexToRgba(secondary, 0.55)}), url("${bgUrl}")`,
+			backgroundImage,
 			backgroundSize: 'cover',
-			backgroundPosition: `${posX}% ${posY}%`,
+			backgroundPosition: `${bgPos.x}% ${bgPos.y}%`,
 			backgroundRepeat: 'no-repeat',
 		};
 	}
 
-	return {
-		background: `linear-gradient(135deg, ${primary}, ${secondary})`,
-	};
+	return { background: background ?? getHeroFillBackground(config) };
+}
+
+export function getHeroOverlayStyle(config: TemplateConfig): CSSProperties | null {
+	const overlay = getHeroImageOverlay(config);
+	return overlay ? { background: overlay } : null;
 }

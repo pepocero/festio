@@ -36,6 +36,8 @@ export interface TemplateConfig {
 	backgroundPositionX?: number;
 	backgroundPositionY?: number;
 	hostFontSize?: number;
+	heroGradient?: boolean;
+	heroOverlay?: boolean;
 }
 
 export interface Template {

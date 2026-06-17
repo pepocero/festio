@@ -1,7 +1,10 @@
-import { forwardRef, useRef, useState, type PointerEvent } from 'react';
+import { forwardRef, memo, useRef, useState, type PointerEvent } from 'react';
 import type { TemplateConfig } from '../lib/api';
-import { getInvitationBackgroundUrl } from '../lib/invitationStyle';
-import { hexToRgba } from '../lib/datetime';
+import { getInvitationBackgroundUrl, getHeroOverlayStyle } from '../lib/invitationStyle';
+import {
+	getHeroFillBackground,
+	resolveElegantBorderColor,
+} from '@shared/utils';
 
 const DEFAULT_HOST_FONT_SIZE = 15;
 
@@ -22,13 +25,13 @@ interface PreviewProps {
 }
 
 const COLOR_LABELS: Record<keyof TemplateConfig['colors'], string> = {
-	primary: 'Primario',
-	secondary: 'Secundario',
+	primary: 'Color cabecera',
+	secondary: 'Color degradado',
 	background: 'Fondo',
 	text: 'Texto',
 };
 
-export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(function InvitationPreview(
+export const InvitationPreview = memo(forwardRef<HTMLDivElement, PreviewProps>(function InvitationPreview(
 	{
 	title,
 	hostName,
@@ -45,16 +48,23 @@ export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(functi
 	ref,
 ) {
 	const heroRef = useRef<HTMLDivElement>(null);
+	const dragOriginRef = useRef<{
+		clientX: number;
+		clientY: number;
+		posX: number;
+		posY: number;
+	} | null>(null);
 	const [dragging, setDragging] = useState(false);
 
 	const bgUrl = getInvitationBackgroundUrl(config, previewImageUrl);
 
-	const { primary, secondary, background, text } = config.colors;
+	const { primary, background, text } = config.colors;
 	const hostFontSize = config.hostFontSize ?? DEFAULT_HOST_FONT_SIZE;
 	const posX = config.backgroundPositionX ?? 50;
 	const posY = config.backgroundPositionY ?? 50;
-	const overlayGradient = `linear-gradient(${hexToRgba(primary, 0.55)}, ${hexToRgba(secondary, 0.55)})`;
-	const fallbackGradient = `linear-gradient(135deg, ${primary}, ${secondary})`;
+	const fallbackBackground = getHeroFillBackground(config);
+	const overlayStyle = getHeroOverlayStyle(config);
+	const elegantBorder = resolveElegantBorderColor(config);
 	const imgCrossOrigin = bgUrl && !bgUrl.startsWith('blob:') ? ('anonymous' as const) : undefined;
 	const canDrag = !exportMode && editableBackground && !!bgUrl && !!onBackgroundPositionChange;
 
@@ -70,12 +80,15 @@ export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(functi
 			}).format(new Date(eventDate))
 		: 'Fecha por confirmar';
 
-	const updatePositionFromEvent = (clientX: number, clientY: number) => {
+	const updatePositionFromDelta = (clientX: number, clientY: number) => {
+		const origin = dragOriginRef.current;
 		const el = heroRef.current;
-		if (!el || !onBackgroundPositionChange) return;
+		if (!origin || !el || !onBackgroundPositionChange) return;
 		const rect = el.getBoundingClientRect();
-		const x = Math.round(Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100)));
-		const y = Math.round(Math.min(100, Math.max(0, ((clientY - rect.top) / rect.height) * 100)));
+		const deltaX = ((clientX - origin.clientX) / rect.width) * 100;
+		const deltaY = -((clientY - origin.clientY) / rect.height) * 100;
+		const x = Math.round(Math.min(100, Math.max(0, origin.posX + deltaX)));
+		const y = Math.round(Math.min(100, Math.max(0, origin.posY + deltaY)));
 		onBackgroundPositionChange(x, y);
 	};
 
@@ -83,17 +96,23 @@ export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(functi
 		if (!canDrag) return;
 		e.currentTarget.setPointerCapture(e.pointerId);
 		setDragging(true);
-		updatePositionFromEvent(e.clientX, e.clientY);
+		dragOriginRef.current = {
+			clientX: e.clientX,
+			clientY: e.clientY,
+			posX,
+			posY,
+		};
 	};
 
 	const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
 		if (!dragging || !canDrag) return;
-		updatePositionFromEvent(e.clientX, e.clientY);
+		updatePositionFromDelta(e.clientX, e.clientY);
 	};
 
 	const onPointerUp = (e: PointerEvent<HTMLDivElement>) => {
 		if (!canDrag) return;
 		e.currentTarget.releasePointerCapture(e.pointerId);
+		dragOriginRef.current = null;
 		setDragging(false);
 	};
 
@@ -102,13 +121,13 @@ export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(functi
 			ref={ref}
 			className={`preview-card layout-${config.layout}`}
 			style={{
-				borderColor: config.layout === 'elegant' ? secondary : undefined,
+				borderColor: config.layout === 'elegant' ? elegantBorder : undefined,
 			}}
 		>
 			<div
 				ref={heroRef}
 				className={`preview-hero${canDrag ? ' preview-hero--draggable' : ''}${dragging ? ' is-dragging' : ''}`}
-				style={!bgUrl ? { background: fallbackGradient } : undefined}
+				style={!bgUrl ? { background: fallbackBackground } : undefined}
 				onPointerDown={onPointerDown}
 				onPointerMove={onPointerMove}
 				onPointerUp={onPointerUp}
@@ -124,11 +143,13 @@ export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(functi
 							draggable={false}
 							style={{ objectPosition: `${posX}% ${posY}%` }}
 						/>
-						<div
-							className="preview-hero-overlay"
-							style={{ background: overlayGradient }}
-							aria-hidden
-						/>
+						{overlayStyle && (
+							<div
+								className="preview-hero-overlay"
+								style={overlayStyle}
+								aria-hidden
+							/>
+						)}
 					</>
 				)}
 				{canDrag && (
@@ -166,6 +187,6 @@ export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(functi
 			</div>
 		</div>
 	);
-});
+}));
 
 export { COLOR_LABELS };

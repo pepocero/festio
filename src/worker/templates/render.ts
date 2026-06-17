@@ -1,14 +1,16 @@
 import type { Invitation, TemplateConfig } from '@shared/types';
 import {
 	buildGoogleCalendarUrl,
+	buildCardHeroBackgroundCss,
 	defaultEndDate,
 	escapeHtml,
 	formatEventDate,
+	getHeroFillBackground,
 	googleFontsLink,
-	hexToRgba,
 	mergeConfig,
 	parseTemplateConfig,
 	resolveBackgroundPosition,
+	resolveElegantBorderColor,
 	resolveHostFontSize,
 	resolveOgImage,
 } from '@shared/utils';
@@ -58,6 +60,10 @@ export function renderPublicInvitationHtml(params: {
 	const layoutClass = `layout-${config.layout}`;
 	const hostFontSize = resolveHostFontSize(config);
 	const bgPos = resolveBackgroundPosition(config);
+	const elegantBorder = resolveElegantBorderColor(config);
+	const heroBackgroundCss = bgUrl
+		? buildCardHeroBackgroundCss(config, escapeHtml(bgUrl), bgPos)
+		: `background: ${getHeroFillBackground(config)};`;
 
 	return `<!DOCTYPE html>
 <html lang="es">
@@ -110,10 +116,7 @@ export function renderPublicInvitationHtml(params: {
     }
     .card-hero {
       min-height: 220px;
-      background-size: cover;
-      background-position: ${bgPos.x}% ${bgPos.y}%;
-      background-repeat: no-repeat;
-      ${bgUrl ? `background-image: linear-gradient(${hexToRgba(config.colors.primary, 0.55)}, ${hexToRgba(config.colors.secondary, 0.55)}), url('${escapeHtml(bgUrl)}');` : `background: linear-gradient(135deg, ${config.colors.primary}, ${config.colors.secondary});`}
+      ${heroBackgroundCss}
       display: flex;
       align-items: flex-end;
       padding: 1.5rem;
@@ -170,9 +173,15 @@ export function renderPublicInvitationHtml(params: {
       background: linear-gradient(135deg, #6d28d9 0%, #db2777 100%);
       color: #fff;
     }
-    .layout-elegant .card { border: 2px solid ${config.colors.secondary}; }
-    .layout-modern .card { border-radius: 0.5rem; }
-    .layout-classic .card-hero h1 { font-size: 2.25rem; }
+    .layout-elegant .card { border: 2px solid ${elegantBorder}; border-radius: 0.25rem; box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
+    .layout-modern .card { border-radius: 0.35rem; box-shadow: 0 10px 28px rgba(15,23,42,0.14); }
+    .layout-modern .card-hero h1 { font-size: 1.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+    .layout-modern .card-body { padding: 1.5rem 1.35rem; }
+    .layout-modern .date { border-left: none; border-radius: 0.35rem; }
+    .layout-classic .card { border-radius: 1.25rem; }
+    .layout-classic .card-hero h1 { font-size: 2.25rem; letter-spacing: 0.02em; }
+    .layout-classic .date { border-left-width: 4px; }
+    .layout-elegant .card-hero h1 { font-size: 2rem; letter-spacing: 0.04em; font-weight: 600; }
     .footer { margin-top: 1.5rem; font-size: 0.8rem; opacity: 0.5; text-align: center; }
   </style>
 </head>

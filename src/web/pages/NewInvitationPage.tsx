@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api, type Template } from '../lib/api';
+import { getHeroFillBackground } from '@shared/utils';
 
 const CATEGORY_LABELS: Record<string, string> = {
 	cumpleanos: 'Cumpleaños',
@@ -91,7 +92,7 @@ export function NewInvitationPage() {
 							<div
 								className="template-preview"
 								style={{
-									background: `linear-gradient(135deg, ${tpl.default_config.colors.primary}, ${tpl.default_config.colors.secondary})`,
+									background: getHeroFillBackground(tpl.default_config),
 								}}
 							>
 								{tpl.preview_image_key && (

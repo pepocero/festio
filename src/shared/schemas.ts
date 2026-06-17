@@ -21,6 +21,8 @@ export const templateConfigSchema = z.object({
 	backgroundPositionX: z.number().min(0).max(100).optional(),
 	backgroundPositionY: z.number().min(0).max(100).optional(),
 	hostFontSize: z.number().min(10).max(32).optional(),
+	heroGradient: z.boolean().optional(),
+	heroOverlay: z.boolean().optional(),
 });
 
 export const registerSchema = z.object({

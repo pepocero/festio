@@ -1,12 +1,15 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api, type Invitation, type TemplateConfig } from '../lib/api';
+import { compressImageForUpload } from '../lib/compressImage';
 import { splitIsoToDateAndTime } from '../lib/datetime';
 import { useIsMobile } from '../lib/useIsMobile';
 import { COLOR_LABELS, InvitationPreview } from '../components/InvitationPreview';
+import { ColorSwatchField } from '../components/ColorSwatchField';
 import { DateTimeField, dateTimeToIso } from '../components/DateTimeField';
 import { CollapsibleSection } from '../components/CollapsibleSection';
 import { ShareButtons } from '../components/ShareButtons';
+import { BackgroundPicker } from '../components/BackgroundPicker';
 import { HomeIcon } from '../components/icons';
 
 const FONT_OPTIONS = ['Playfair Display', 'Montserrat', 'Dancing Script', 'Lora'];
@@ -148,16 +151,20 @@ export function EditorPage() {
 		if (blobUrlRef.current) {
 			URL.revokeObjectURL(blobUrlRef.current);
 		}
-		const blobUrl = URL.createObjectURL(file);
-		blobUrlRef.current = blobUrl;
-		setPreviewImageUrl(blobUrl);
 
 		setUploading(true);
 		setError('');
 		try {
-			const { asset } = await api.uploadImage(file);
+			const compressed = await compressImageForUpload(file);
+			const blobUrl = URL.createObjectURL(compressed);
+			blobUrlRef.current = blobUrl;
+			setPreviewImageUrl(blobUrl);
+
+			const { asset } = await api.uploadImage(compressed);
 			setConfig((prev) =>
-				prev ? { ...prev, customBackgroundKey: asset.r2_key } : prev,
+				prev
+					? { ...prev, customBackgroundKey: asset.r2_key, backgroundImage: '' }
+					: prev,
 			);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error al subir imagen');
@@ -171,13 +178,22 @@ export function EditorPage() {
 		}
 	};
 
-	const clearCustomImage = () => {
+	const selectStockBackground = (url: string) => {
 		if (blobUrlRef.current) {
 			URL.revokeObjectURL(blobUrlRef.current);
 			blobUrlRef.current = null;
 		}
 		setPreviewImageUrl(null);
-		updateConfig({ customBackgroundKey: undefined });
+		updateConfig({ backgroundImage: url, customBackgroundKey: '' });
+	};
+
+	const clearBackgroundImage = () => {
+		if (blobUrlRef.current) {
+			URL.revokeObjectURL(blobUrlRef.current);
+			blobUrlRef.current = null;
+		}
+		setPreviewImageUrl(null);
+		updateConfig({ customBackgroundKey: '', backgroundImage: '' });
 	};
 
 	if (loading) return <div className="app-layout"><p className="loading-center">Cargando...</p></div>;
@@ -189,6 +205,7 @@ export function EditorPage() {
 		config.customBackgroundKey ||
 		config.backgroundImage
 	);
+	const hasCustomBackground = !!(previewImageUrl || config.customBackgroundKey);
 
 	const handleBackgroundPositionChange = (x: number, y: number) => {
 		updateConfig({ backgroundPositionX: x, backgroundPositionY: y });
@@ -337,21 +354,51 @@ export function EditorPage() {
 
 						<CollapsibleSection title="Personalización" defaultOpen={!isMobile}>
 							<div className="color-grid">
-								{(['primary', 'secondary', 'background', 'text'] as const).map((key) => (
-									<div key={key} className="color-field">
-										<label className="color-field-label" htmlFor={`color-${key}`}>
-											{COLOR_LABELS[key]}
-										</label>
-										<input
-											id={`color-${key}`}
-											type="color"
-											className="color-swatch"
-											value={config.colors[key]}
-											onChange={(e) => updateColors(key, e.target.value)}
-										/>
-									</div>
-								))}
+								<ColorSwatchField
+									id="color-primary"
+									label={COLOR_LABELS.primary}
+									value={config.colors.primary}
+									onChange={(value) => updateColors('primary', value)}
+								/>
+								{config.heroGradient && (
+									<ColorSwatchField
+										id="color-secondary"
+										label={COLOR_LABELS.secondary}
+										value={config.colors.secondary}
+										onChange={(value) => updateColors('secondary', value)}
+									/>
+								)}
+								<ColorSwatchField
+									id="color-background"
+									label={COLOR_LABELS.background}
+									value={config.colors.background}
+									onChange={(value) => updateColors('background', value)}
+								/>
+								<ColorSwatchField
+									id="color-text"
+									label={COLOR_LABELS.text}
+									value={config.colors.text}
+									onChange={(value) => updateColors('text', value)}
+								/>
 							</div>
+							<label className="toggle-option">
+								<input
+									type="checkbox"
+									checked={config.heroGradient ?? false}
+									onChange={(e) => updateConfig({ heroGradient: e.target.checked })}
+								/>
+								Usar degradado en la cabecera
+							</label>
+							{(config.customBackgroundKey || previewImageUrl || config.backgroundImage) && (
+								<label className="toggle-option">
+									<input
+										type="checkbox"
+										checked={config.heroOverlay ?? false}
+										onChange={(e) => updateConfig({ heroOverlay: e.target.checked })}
+									/>
+									Aplicar filtro de color sobre la imagen
+								</label>
+							)}
 							<label>
 								Fuente del título
 								<select
@@ -392,7 +439,20 @@ export function EditorPage() {
 								</select>
 							</label>
 							<div className={`upload-section${hasBackgroundImage ? '' : ' editor-form-last'}`}>
-								<label>Imagen de fondo propia</label>
+								<label>Imagen de fondo</label>
+								<BackgroundPicker
+									config={config}
+									previewImageUrl={previewImageUrl}
+									onSelect={selectStockBackground}
+									onClear={clearBackgroundImage}
+								/>
+								{hasBackgroundImage && (
+									<p className="upload-status text-muted">
+										{hasCustomBackground
+											? 'Usando tu foto personalizada'
+											: 'Usando imagen de fondo seleccionada'}
+									</p>
+								)}
 								<input
 									ref={fileRef}
 									type="file"
@@ -410,15 +470,15 @@ export function EditorPage() {
 										disabled={uploading}
 										onClick={() => fileRef.current?.click()}
 									>
-										{uploading ? 'Subiendo...' : 'Subir foto'}
+										{uploading ? 'Subiendo...' : hasBackgroundImage ? 'Cambiar foto' : 'Subir foto'}
 									</button>
-									{(config.customBackgroundKey || previewImageUrl) && (
+									{hasBackgroundImage && (
 										<button
 											type="button"
 											className="btn btn-ghost btn-sm"
-											onClick={clearCustomImage}
+											onClick={clearBackgroundImage}
 										>
-											Quitar foto
+											Quitar imagen
 										</button>
 									)}
 								</div>

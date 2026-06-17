@@ -11,7 +11,9 @@ import {
 	slugExists,
 	updateInvitation,
 } from '../db/queries';
+import { deleteUserAsset } from '../lib/assets';
 import { requireAuth, type AuthVariables } from '../auth/middleware';
+import { parseTemplateConfig } from '@shared/utils';
 
 const generateSlug = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 10);
 
@@ -117,7 +119,17 @@ invitations.patch('/:id', async (c) => {
 });
 
 invitations.delete('/:id', async (c) => {
-	const ok = await deleteInvitation(c.env.DB, c.req.param('id'), c.get('userId'));
+	const userId = c.get('userId');
+	const invitationId = c.req.param('id');
+	const inv = await findInvitationById(c.env.DB, invitationId, userId);
+	if (!inv) return c.json({ error: 'Invitación no encontrada' }, 404);
+
+	const config = parseTemplateConfig(inv.config);
+	if (config.customBackgroundKey) {
+		await deleteUserAsset(c.env, userId, config.customBackgroundKey);
+	}
+
+	const ok = await deleteInvitation(c.env.DB, invitationId, userId);
 	if (!ok) return c.json({ error: 'Invitación no encontrada' }, 404);
 	return c.json({ ok: true });
 });
