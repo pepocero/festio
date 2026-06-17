@@ -5,7 +5,14 @@ import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { NewInvitationPage } from './pages/NewInvitationPage';
 import { EditorPage } from './pages/EditorPage';
+import { LandingPage } from './pages/LandingPage';
 import type { ReactNode } from 'react';
+
+function HomeRoute() {
+	const { loading } = useAuth();
+	if (loading) return <div className="loading-screen">Cargando...</div>;
+	return <LandingPage />;
+}
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
 	const { user, loading } = useAuth();
@@ -24,7 +31,7 @@ function GuestRoute({ children }: { children: ReactNode }) {
 export default function App() {
 	return (
 		<Routes>
-			<Route path="/" element={<Navigate to="/app" replace />} />
+			<Route path="/" element={<HomeRoute />} />
 			<Route
 				path="/login"
 				element={
@@ -65,7 +72,7 @@ export default function App() {
 					</ProtectedRoute>
 				}
 			/>
-			<Route path="*" element={<Navigate to="/app" replace />} />
+			<Route path="*" element={<Navigate to="/" replace />} />
 		</Routes>
 	);
 }

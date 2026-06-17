@@ -51,6 +51,11 @@ export function NewInvitationPage() {
 					</Link>
 					<h1>Elige una plantilla</h1>
 				</div>
+				<div className="header-actions">
+					<Link to="/" className="btn btn-secondary btn-sm">
+						Página principal
+					</Link>
+				</div>
 			</header>
 			<main className="app-main">
 				{error && <div className="error-banner">{error}</div>}

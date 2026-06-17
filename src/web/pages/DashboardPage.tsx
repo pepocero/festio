@@ -50,10 +50,13 @@ export function DashboardPage() {
 					<p className="text-muted">Mis invitaciones · {user?.email}</p>
 				</div>
 				<div className="header-actions">
+					<Link to="/" className="btn btn-secondary">
+						Página principal
+					</Link>
 					<Link to="/app/new" className="btn btn-primary">
 						+ Nueva invitación
 					</Link>
-					<button type="button" className="btn btn-ghost" onClick={() => void logout().then(() => navigate('/login'))}>
+					<button type="button" className="btn btn-ghost" onClick={() => void logout().then(() => navigate('/'))}>
 						Salir
 					</button>
 				</div>

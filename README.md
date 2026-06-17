@@ -35,12 +35,13 @@ wrangler r2 bucket create festio-assets
 # Secret JWT (producción)
 wrangler secret put JWT_SECRET
 
-# Desarrollo (requiere build previo)
-npm run build
+# Desarrollo
 npm run dev
 ```
 
 Abre `http://localhost:8787`. Copia `.dev.vars.example` a `.dev.vars` y configura `JWT_SECRET`.
+
+`npm run dev` usa Vite con recarga en caliente (no hace falta `build` antes). Para probar el build de producción en local: `npm run dev:wrangler`.
 
 ## Despliegue en Cloudflare
 

@@ -202,6 +202,9 @@ export function EditorPage() {
 					<h1>Editar invitación</h1>
 				</div>
 				<div className="header-actions editor-header-actions">
+					<Link to="/" className="btn btn-secondary btn-sm">
+						Página principal
+					</Link>
 					<button
 						type="button"
 						className="btn btn-secondary"

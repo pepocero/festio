@@ -78,6 +78,9 @@ export function RegisterPage() {
 				<p className="auth-footer">
 					¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
 				</p>
+				<p className="auth-footer">
+					<Link to="/">← Volver al inicio</Link>
+				</p>
 			</div>
 		</div>
 	);

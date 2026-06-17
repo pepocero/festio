@@ -5,6 +5,10 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [react(), cloudflare()],
+	server: {
+		port: 8787,
+		strictPort: true,
+	},
 	resolve: {
 		alias: {
 			'@shared': path.resolve(__dirname, './src/shared'),
