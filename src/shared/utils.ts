@@ -15,53 +15,20 @@ export function buildGoogleCalendarUrl(params: {
 	location: string;
 	details: string;
 }): string {
-	return buildIcsDataUrl(params);
+	const start = toGoogleCalendarDate(params.startIso);
+	const end = toGoogleCalendarDate(params.endIso);
+	const qs = new URLSearchParams({
+		action: 'TEMPLATE',
+		text: params.title,
+		dates: `${start}/${end}`,
+		details: params.details,
+		location: params.location,
+		ctz: params.timezone,
+	});
+	return `https://calendar.google.com/calendar/render?${qs.toString()}`;
 }
 
-/** ICS evita el formulario de Google con invitados/lista de invitados preactivados */
-export function buildIcsDataUrl(params: {
-	title: string;
-	startIso: string;
-	endIso: string;
-	timezone: string;
-	location: string;
-	details: string;
-}): string {
-	const ics = [
-		'BEGIN:VCALENDAR',
-		'VERSION:2.0',
-		'PRODID:-//Festio//ES',
-		'CALSCALE:GREGORIAN',
-		'METHOD:PUBLISH',
-		'BEGIN:VEVENT',
-		`UID:${crypto.randomUUID()}@festio`,
-		`DTSTAMP:${toIcsDate(new Date().toISOString())}`,
-		`DTSTART:${toIcsDate(params.startIso)}`,
-		`DTEND:${toIcsDate(params.endIso)}`,
-		`SUMMARY:${escapeIcs(params.title)}`,
-		`DESCRIPTION:${escapeIcs(params.details)}`,
-		params.location ? `LOCATION:${escapeIcs(params.location)}` : '',
-		'STATUS:CONFIRMED',
-		'TRANSP:OPAQUE',
-		'CLASS:PUBLIC',
-		'END:VEVENT',
-		'END:VCALENDAR',
-	]
-		.filter(Boolean)
-		.join('\r\n');
-
-	return `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`;
-}
-
-function escapeIcs(text: string): string {
-	return text
-		.replace(/\\/g, '\\\\')
-		.replace(/;/g, '\\;')
-		.replace(/,/g, '\\,')
-		.replace(/\n/g, '\\n');
-}
-
-function toIcsDate(iso: string): string {
+function toGoogleCalendarDate(iso: string): string {
 	const d = new Date(iso);
 	const pad = (n: number) => String(n).padStart(2, '0');
 	return (

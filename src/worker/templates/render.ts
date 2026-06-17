@@ -175,7 +175,7 @@ export function renderPublicInvitationHtml(params: {
         ${invitation.location ? `<p class="location">📍 ${escapeHtml(invitation.location)}</p>` : ''}
         ${invitation.message ? `<p class="message">${escapeHtml(invitation.message)}</p>` : ''}
         <div class="actions">
-          ${calendarUrl ? `<a class="btn btn-calendar" href="${escapeHtml(calendarUrl)}">📅 Añadir a Google Calendar</a>` : ''}
+          ${calendarUrl ? `<a class="btn btn-calendar" href="${escapeHtml(calendarUrl)}" target="_blank" rel="noopener noreferrer">📅 Añadir a Google Calendar</a>` : ''}
           <a class="btn btn-whatsapp" href="${whatsappUrl}" target="_blank" rel="noopener">Compartir por WhatsApp</a>
           <button class="btn btn-secondary" type="button" id="copy-btn">Copiar enlace</button>
           <a class="btn btn-secondary" href="${emailUrl}">Enviar por email</a>
