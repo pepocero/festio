@@ -45,18 +45,19 @@ Abre `http://localhost:8787`. Copia `.dev.vars.example` a `.dev.vars` y configur
 
 ## Despliegue en Cloudflare
 
-**Producción:** https://festio.pepocero.workers.dev
+Festio es un **Worker full-stack** (API + SPA + SSR) con D1 y R2. El despliegue correcto es con **Wrangler** o el workflow de GitHub incluido.
 
-Festio es un **Worker full-stack** (API + SPA + SSR) con D1 y R2. No es un sitio estático de Pages; el despliegue correcto es con **Wrangler** o el workflow de GitHub incluido.
+### Recursos necesarios
 
-### Infraestructura (ya creada en la cuenta)
+| Recurso | Nombre en Cloudflare | Binding / notas |
+|---------|----------------------|-----------------|
+| Worker | `festio` | Nombre del proyecto |
+| D1 | `festio-db` | `DB` en `wrangler.jsonc` |
+| R2 | `festio-assets` | `ASSETS` |
+| Secreto | `JWT_SECRET` | Variables del Worker |
+| Variable | `APP_URL` | URL pública de la app |
 
-| Recurso | Nombre | ID / detalle |
-|---------|--------|----------------|
-| Worker | `festio` | https://festio.pepocero.workers.dev |
-| D1 | `festio-db` | `1e0c9006-49e9-4e57-9a2d-cb4cac26d072` |
-| R2 | `festio-assets` | binding `ASSETS` |
-| Secreto | `JWT_SECRET` | configurado en el Worker |
+No subas al repositorio tokens, `JWT_SECRET` ni otros secretos. Los IDs de cuenta y base de datos configúralos solo en `wrangler.jsonc` local o en secretos de CI.
 
 ### Despliegue automático (GitHub Actions)
 
@@ -65,7 +66,7 @@ En el repositorio de GitHub → **Settings → Secrets and variables → Actions
 | Secreto | Valor |
 |---------|--------|
 | `CLOUDFLARE_API_TOKEN` | Token con permisos *Workers Scripts*, *Workers R2*, *D1* ([crear token](https://dash.cloudflare.com/profile/api-tokens)) |
-| `CLOUDFLARE_ACCOUNT_ID` | `57c6750913a2c0db6a279da9658d402a` |
+| `CLOUDFLARE_ACCOUNT_ID` | Tu Account ID (Cloudflare → **Workers & Pages** → **Overview**, columna derecha) |
 
 Cada push a `main` ejecuta `.github/workflows/deploy.yml` (build + migraciones D1 + `wrangler deploy`).
 
@@ -79,7 +80,7 @@ npm run deploy
 
 ### Conectar Git en el panel de Cloudflare (alternativa)
 
-**Workers & Pages** → **Create** → **Connect to Git** → repo `festio`.
+**Workers & Pages** → **Create** → **Connect to Git** → repositorio del proyecto.
 
 | Campo | Valor |
 |-------|--------|
