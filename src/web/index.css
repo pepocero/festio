@@ -33,8 +33,15 @@ a {
 	text-decoration: none;
 }
 
-a:hover {
-	text-decoration: underline;
+a:hover,
+a:focus,
+a:active,
+a:visited {
+	text-decoration: none;
+}
+
+a:not(.btn):hover {
+	color: var(--color-primary-hover);
 }
 
 /* Buttons */

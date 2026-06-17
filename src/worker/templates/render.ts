@@ -160,7 +160,16 @@ export function renderPublicInvitationHtml(params: {
       transition: transform 0.15s, opacity 0.15s;
     }
     .btn:active { transform: scale(0.98); }
-    .btn-calendar { background: #4285f4; color: #fff; }
+    .btn-calendar {
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+      text-decoration: none;
+    }
+    .btn-calendar:hover {
+      background: linear-gradient(135deg, #6d28d9 0%, #db2777 100%);
+      color: #fff;
+    }
     .layout-elegant .card { border: 2px solid ${config.colors.secondary}; }
     .layout-modern .card { border-radius: 0.5rem; }
     .layout-classic .card-hero h1 { font-size: 2.25rem; }
