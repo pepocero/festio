@@ -17,6 +17,7 @@ assets.get('/*', async (c) => {
 	object.writeHttpMetadata(headers);
 	headers.set('Cache-Control', 'public, max-age=31536000, immutable');
 	headers.set('X-Content-Type-Options', 'nosniff');
+	headers.set('Access-Control-Allow-Origin', '*');
 
 	return new Response(object.body, { headers });
 });

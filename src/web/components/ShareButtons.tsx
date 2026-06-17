@@ -112,12 +112,7 @@ export function ShareButtons({ url, title, invitation, previewRef }: ShareButton
 			</div>
 
 			{invitation && !previewRef && (
-				<div
-					ref={exportRef}
-					className="invitation-image-export-root"
-					aria-hidden
-					inert
-				>
+				<div ref={exportRef} className="invitation-image-export-root" aria-hidden>
 					<InvitationPreview
 						title={invitation.title}
 						hostName={invitation.hostName}

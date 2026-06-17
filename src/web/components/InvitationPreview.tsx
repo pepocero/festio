@@ -1,6 +1,7 @@
 import { forwardRef, useRef, useState, type PointerEvent } from 'react';
 import type { TemplateConfig } from '../lib/api';
-import { getHeroBackgroundStyle, getInvitationBackgroundUrl } from '../lib/invitationStyle';
+import { getInvitationBackgroundUrl } from '../lib/invitationStyle';
+import { hexToRgba } from '../lib/datetime';
 
 const DEFAULT_HOST_FONT_SIZE = 15;
 
@@ -50,6 +51,11 @@ export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(functi
 
 	const { primary, secondary, background, text } = config.colors;
 	const hostFontSize = config.hostFontSize ?? DEFAULT_HOST_FONT_SIZE;
+	const posX = config.backgroundPositionX ?? 50;
+	const posY = config.backgroundPositionY ?? 50;
+	const overlayGradient = `linear-gradient(${hexToRgba(primary, 0.55)}, ${hexToRgba(secondary, 0.55)})`;
+	const fallbackGradient = `linear-gradient(135deg, ${primary}, ${secondary})`;
+	const imgCrossOrigin = bgUrl && !bgUrl.startsWith('blob:') ? ('anonymous' as const) : undefined;
 	const canDrag = !exportMode && editableBackground && !!bgUrl && !!onBackgroundPositionChange;
 
 	const formattedDate = eventDate
@@ -63,8 +69,6 @@ export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(functi
 				timeZone: timezone,
 			}).format(new Date(eventDate))
 		: 'Fecha por confirmar';
-
-	const heroStyle = getHeroBackgroundStyle(config, previewImageUrl);
 
 	const updatePositionFromEvent = (clientX: number, clientY: number) => {
 		const el = heroRef.current;
@@ -104,12 +108,29 @@ export const InvitationPreview = forwardRef<HTMLDivElement, PreviewProps>(functi
 			<div
 				ref={heroRef}
 				className={`preview-hero${canDrag ? ' preview-hero--draggable' : ''}${dragging ? ' is-dragging' : ''}`}
-				style={heroStyle}
+				style={!bgUrl ? { background: fallbackGradient } : undefined}
 				onPointerDown={onPointerDown}
 				onPointerMove={onPointerMove}
 				onPointerUp={onPointerUp}
 				onPointerCancel={onPointerUp}
 			>
+				{bgUrl && (
+					<>
+						<img
+							src={bgUrl}
+							alt=""
+							className="preview-hero-bg"
+							crossOrigin={imgCrossOrigin}
+							draggable={false}
+							style={{ objectPosition: `${posX}% ${posY}%` }}
+						/>
+						<div
+							className="preview-hero-overlay"
+							style={{ background: overlayGradient }}
+							aria-hidden
+						/>
+					</>
+				)}
 				{canDrag && (
 					<span className="preview-hero-hint" aria-hidden>
 						↔ Arrastra para mover la imagen

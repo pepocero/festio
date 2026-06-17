@@ -1,4 +1,7 @@
-import { toPng } from 'html-to-image';
+import { toBlob } from 'html-to-image';
+
+const MIN_BLOB_SIZE = 8_000;
+const MAX_CAPTURE_ATTEMPTS = 5;
 
 function slugifyFilename(title: string): string {
 	const base = title
@@ -10,43 +13,147 @@ function slugifyFilename(title: string): string {
 	return base ? `invitacion-${base}` : 'invitacion';
 }
 
-function extractBackgroundUrls(element: HTMLElement): string[] {
+function extractImageUrls(element: HTMLElement): string[] {
 	const urls = new Set<string>();
-	for (const el of element.querySelectorAll('*')) {
+	const nodes = [element, ...element.querySelectorAll<HTMLElement>('*')];
+
+	for (const el of nodes) {
+		if (el instanceof HTMLImageElement && el.src) {
+			urls.add(el.src);
+		}
+
 		const bg = getComputedStyle(el).backgroundImage;
 		for (const match of bg.matchAll(/url\(["']?([^"')]+)["']?\)/g)) {
 			if (match[1]) urls.add(match[1]);
 		}
 	}
+
 	return [...urls];
+}
+
+async function waitForPaint(): Promise<void> {
+	await document.fonts.ready;
+	await new Promise<void>((resolve) => {
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => resolve());
+		});
+	});
 }
 
 async function preloadImages(urls: string[]): Promise<void> {
 	await Promise.all(
-		urls.map(
-			(url) =>
-				new Promise<void>((resolve) => {
-					const img = new Image();
-					img.crossOrigin = 'anonymous';
+		urls.map(async (url) => {
+			if (url.startsWith('data:')) return;
+
+			const img = new Image();
+			if (!url.startsWith('blob:')) {
+				img.crossOrigin = 'anonymous';
+			}
+			img.src = url;
+
+			try {
+				await img.decode();
+			} catch {
+				await new Promise<void>((resolve) => {
 					img.onload = () => resolve();
 					img.onerror = () => resolve();
-					img.src = url;
-				}),
-		),
+				});
+			}
+		}),
 	);
 }
 
-export async function captureInvitationAsPng(element: HTMLElement): Promise<Blob> {
-	await document.fonts.ready;
-	await preloadImages(extractBackgroundUrls(element));
+function getCapturePixelRatio(): number {
+	return Math.min(window.devicePixelRatio || 1, 2);
+}
 
-	const dataUrl = await toPng(element, {
-		pixelRatio: 2,
-		cacheBust: true,
+function prepareElementForCapture(element: HTMLElement): () => void {
+	const restores: Array<() => void> = [];
+
+	const prevBoxShadow = element.style.boxShadow;
+	element.style.boxShadow = 'none';
+	restores.push(() => {
+		element.style.boxShadow = prevBoxShadow;
 	});
 
-	const response = await fetch(dataUrl);
-	return response.blob();
+	const exportRoot = element.closest('.invitation-image-export-root') as HTMLElement | null;
+	if (exportRoot) {
+		const prev = {
+			opacity: exportRoot.style.opacity,
+			visibility: exportRoot.style.visibility,
+			zIndex: exportRoot.style.zIndex,
+			left: exportRoot.style.left,
+			top: exportRoot.style.top,
+		};
+		exportRoot.style.opacity = '1';
+		exportRoot.style.visibility = 'visible';
+		exportRoot.style.zIndex = '-1';
+		exportRoot.style.left = '0';
+		exportRoot.style.top = '0';
+		restores.push(() => {
+			exportRoot.style.opacity = prev.opacity;
+			exportRoot.style.visibility = prev.visibility;
+			exportRoot.style.zIndex = prev.zIndex;
+			exportRoot.style.left = prev.left;
+			exportRoot.style.top = prev.top;
+		});
+	}
+
+	element.scrollIntoView({ block: 'center', inline: 'nearest' });
+
+	return () => {
+		for (let i = restores.length - 1; i >= 0; i -= 1) {
+			restores[i]();
+		}
+	};
+}
+
+export async function captureInvitationAsPng(element: HTMLElement): Promise<Blob> {
+	const restore = prepareElementForCapture(element);
+
+	try {
+		await waitForPaint();
+		await preloadImages(extractImageUrls(element));
+		await waitForPaint();
+
+		const pixelRatio = getCapturePixelRatio();
+		let blob: Blob | null = null;
+		let lastSize = 0;
+
+		for (let attempt = 0; attempt < MAX_CAPTURE_ATTEMPTS; attempt += 1) {
+			blob = await toBlob(element, {
+				pixelRatio,
+				cacheBust: true,
+				backgroundColor: '#ffffff',
+				onClone: (_doc, cloned) => {
+					cloned.style.boxShadow = 'none';
+					for (const node of cloned.querySelectorAll<HTMLElement>('.preview-card, .preview-hero')) {
+						node.style.boxShadow = 'none';
+					}
+				},
+			});
+
+			if (!blob) continue;
+
+			if (blob.size > MIN_BLOB_SIZE && (attempt === 0 || blob.size >= lastSize)) {
+				if (attempt >= 1 || blob.size > MIN_BLOB_SIZE * 2) {
+					break;
+				}
+			}
+
+			lastSize = blob.size;
+			await new Promise((resolve) => setTimeout(resolve, 150 * (attempt + 1)));
+			await waitForPaint();
+		}
+
+		if (!blob || blob.size < MIN_BLOB_SIZE) {
+			throw new Error('No se pudo generar la imagen correctamente');
+		}
+
+		return blob;
+	} finally {
+		restore();
+	}
 }
 
 function downloadBlob(blob: Blob, filename: string): void {
