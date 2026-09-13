@@ -265,7 +265,7 @@ export function renderPublicInvitationHtml(params: {
 					: ''}
         ${invitation.message ? `<p class="message">${escapeHtml(invitation.message)}</p>` : ''}
         ${calendarUrl ? `<div class="actions">
-          <a class="btn-calendar" href="${escapeHtml(calendarUrl)}" target="_blank" rel="noopener noreferrer" title="Añadir al calendario"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>Calendario</a>
+          <a class="btn-calendar" href="${escapeHtml(calendarUrl)}" target="_blank" rel="noopener noreferrer" title="Agregar a Calendario"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>Agregar a Calendario</a>
         </div>` : ''}
       </div>
     </article>
