@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="cbGold" x1="10%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%" stop-color="#fff8d2"/>
+      <stop offset="48%" stop-color="#e0b84a"/>
+      <stop offset="100%" stop-color="#7a5610"/>
+    </linearGradient>
+    <filter id="cbShadow" x="-22%" y="-22%" width="144%" height="144%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.2" flood-color="#000" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+  <g filter="url(#cbShadow)" fill="none" stroke="url(#cbGold)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M70 46 H130" stroke-width="2.2"/>
+    <circle cx="70" cy="46" r="3.2" fill="url(#cbGold)" stroke="none"/>
+    <circle cx="85" cy="42" r="3.6" fill="url(#cbGold)" stroke="none"/>
+    <circle cx="100" cy="38" r="4.4" fill="url(#cbGold)" stroke="none"/>
+    <circle cx="115" cy="42" r="3.6" fill="url(#cbGold)" stroke="none"/>
+    <circle cx="130" cy="46" r="3.2" fill="url(#cbGold)" stroke="none"/>
+    <path d="M72 48 L78 62 H122 L128 48" stroke-width="2.4"/>
+    <path d="M78 62 L100 54 L122 62" stroke-width="1.8"/>
+    <path d="M18 118 C28 92 52 98 58 118 C42 112 30 128 18 118" stroke-width="2.3"/>
+    <path d="M28 128 C40 108 62 122 70 138" stroke-width="2"/>
+    <path d="M182 118 C172 92 148 98 142 118 C158 112 170 128 182 118" stroke-width="2.3"/>
+    <path d="M172 128 C160 108 138 122 130 138" stroke-width="2"/>
+    <path d="M36 148 C52 136 70 156 88 146" stroke-width="1.8"/>
+    <path d="M164 148 C148 136 130 156 112 146" stroke-width="1.8"/>
+    <path d="M100 168 L104 176 L100 174 L96 176 Z" fill="url(#cbGold)" stroke="none"/>
+    <path d="M88 180 Q100 188 112 180" stroke-width="1.6"/>
+    <text x="100" y="128" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" letter-spacing="5" fill="url(#cbGold)" stroke="none">VIP</text>
+  </g>
+</svg>

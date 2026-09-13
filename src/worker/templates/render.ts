@@ -1,6 +1,7 @@
 import type { Invitation, TemplateConfig } from '@shared/types';
 import {
 	buildGoogleCalendarUrl,
+	buildGoogleMapsUrl,
 	buildCardHeroBackgroundCss,
 	defaultEndDate,
 	escapeHtml,
@@ -15,6 +16,7 @@ import {
 	resolveOgImage,
 	resolveTitlePosition,
 } from '@shared/utils';
+import { resolveVipBadge, vipArtFlipClass } from '@shared/vipStyles';
 
 export function renderPublicInvitationHtml(params: {
 	invitation: Invitation;
@@ -57,6 +59,7 @@ export function renderPublicInvitationHtml(params: {
 					details: `${invitation.message}\n\nVer invitación: ${publicUrl}`,
 				})
 			: null;
+	const mapsUrl = invitation.location ? buildGoogleMapsUrl(invitation.location) : null;
 
 	const layoutClass = `layout-${config.layout}`;
 	const hostFontSize = resolveHostFontSize(config);
@@ -66,6 +69,15 @@ export function renderPublicInvitationHtml(params: {
 	const heroBackgroundCss = bgUrl
 		? buildCardHeroBackgroundCss(config, escapeHtml(bgUrl), bgPos)
 		: `background: ${getHeroFillBackground(config)};`;
+	const vipBadge = resolveVipBadge(config);
+	const vipSrc = vipBadge ? `${appUrl}${vipBadge.url}` : '';
+	const vipDiscSrc = vipBadge?.discUrl ? `${appUrl}${vipBadge.discUrl}` : '';
+	const vipMarkup =
+		vipBadge && vipBadge.overlay && vipDiscSrc
+			? `<div class="vip-badge vip-badge--overlay vip-badge--${vipBadge.corner}" style="width:${vipBadge.size}%"><img class="vip-badge-art ${vipArtFlipClass(vipBadge.corner)}" src="${escapeHtml(vipSrc)}" alt="" /><img class="vip-badge-disc" src="${escapeHtml(vipDiscSrc)}" alt="" /></div>`
+			: vipBadge
+				? `<img class="vip-badge vip-badge--${vipBadge.corner}" style="width:${vipBadge.size}%" src="${escapeHtml(vipSrc)}" alt="" />`
+				: '';
 
 	return `<!DOCTYPE html>
 <html lang="es">
@@ -116,6 +128,32 @@ export function renderPublicInvitationHtml(params: {
       box-shadow: 0 20px 60px rgba(0,0,0,0.15);
       background: #fff;
     }
+    .vip-badge {
+      position: absolute;
+      z-index: 4;
+      height: auto;
+      pointer-events: none;
+      display: block;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.22));
+    }
+    .vip-badge--top-left { top: 0.4rem; left: 0.4rem; }
+    .vip-badge--top-right { top: 0.4rem; right: 0.4rem; }
+    .vip-badge--bottom-left { bottom: 0.4rem; left: 0.4rem; }
+    .vip-badge--bottom-right { bottom: 0.4rem; right: 0.4rem; }
+    .vip-badge--overlay { filter: none; aspect-ratio: 1; overflow: visible; }
+    .vip-badge-art { position: absolute; display: block; width: 100%; height: auto; }
+    .vip-badge--top-left .vip-badge-art { top: 0; left: 0; }
+    .vip-badge--top-right .vip-badge-art { top: 0; right: 0; }
+    .vip-badge--bottom-left .vip-badge-art { bottom: 0; left: 0; }
+    .vip-badge--bottom-right .vip-badge-art { bottom: 0; right: 0; }
+    .vip-badge-art--flip-x { transform: scaleX(-1); }
+    .vip-badge-art--flip-y { transform: scaleY(-1); }
+    .vip-badge-art--flip-xy { transform: scale(-1); }
+    .vip-badge-disc { position: absolute; width: 86%; height: auto; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.28)); }
+    .vip-badge--top-left .vip-badge-disc { left: 0; top: 0; }
+    .vip-badge--top-right .vip-badge-disc { right: 0; top: 0; }
+    .vip-badge--bottom-left .vip-badge-disc { left: 0; bottom: 0; }
+    .vip-badge--bottom-right .vip-badge-disc { right: 0; bottom: 0; }
     .card-hero {
       position: relative;
       min-height: 220px;
@@ -149,6 +187,8 @@ export function renderPublicInvitationHtml(params: {
       border-left: 4px solid ${config.colors.primary};
     }
     .location { margin: 0.75rem 0; opacity: 0.9; }
+    .location-link { color: inherit; text-decoration: underline; text-underline-offset: 0.15em; }
+    .location-link:hover { opacity: 1; }
     .message { margin-top: 1rem; font-style: italic; opacity: 0.85; white-space: pre-line; }
     .actions {
       display: flex;
@@ -181,6 +221,16 @@ export function renderPublicInvitationHtml(params: {
       background: linear-gradient(135deg, #6d28d9 0%, #db2777 100%);
       color: #fff;
     }
+    .btn-maps {
+      background: #1a73e8;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35);
+      text-decoration: none;
+    }
+    .btn-maps:hover {
+      background: #1558b0;
+      color: #fff;
+    }
     .layout-elegant .card { border: 2px solid ${elegantBorder}; border-radius: 0.25rem; box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
     .layout-modern .card { border-radius: 0.35rem; box-shadow: 0 10px 28px rgba(15,23,42,0.14); }
     .layout-modern .card-hero h1 { font-size: 1.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
@@ -198,14 +248,16 @@ export function renderPublicInvitationHtml(params: {
     <article class="card">
       <header class="card-hero">
         <h1>${escapeHtml(title)}</h1>
+        ${vipMarkup}
       </header>
       <div class="card-body">
         ${invitation.host_name ? `<p class="host"><span class="host-label">Organiza:</span> ${escapeHtml(invitation.host_name)}</p>` : ''}
         <p class="date">📅 ${escapeHtml(eventDateFormatted)}</p>
-        ${invitation.location ? `<p class="location">📍 ${escapeHtml(invitation.location)}</p>` : ''}
+        ${mapsUrl ? `<p class="location"><a class="location-link" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer">📍 ${escapeHtml(invitation.location)}</a></p>` : ''}
         ${invitation.message ? `<p class="message">${escapeHtml(invitation.message)}</p>` : ''}
-        ${calendarUrl ? `<div class="actions">
-          <a class="btn btn-calendar" href="${escapeHtml(calendarUrl)}" target="_blank" rel="noopener noreferrer">📅 Añadir a Google Calendar</a>
+        ${calendarUrl || mapsUrl ? `<div class="actions">
+          ${calendarUrl ? `<a class="btn btn-calendar" href="${escapeHtml(calendarUrl)}" target="_blank" rel="noopener noreferrer">📅 Añadir a Google Calendar</a>` : ''}
+          ${mapsUrl ? `<a class="btn btn-maps" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer">📍 Abrir en Google Maps</a>` : ''}
         </div>` : ''}
       </div>
     </article>

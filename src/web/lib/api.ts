@@ -40,6 +40,25 @@ export interface TemplateConfig {
 	heroOverlay?: boolean;
 	titlePositionX?: number;
 	titlePositionY?: number;
+	vipEnabled?: boolean;
+	vipStyle?:
+		| 'seal-gold'
+		| 'ribbon'
+		| 'medallion'
+		| 'diamond'
+		| 'floral'
+		| 'noir'
+		| 'crown-gold'
+		| 'crown-royal'
+		| 'laurel-gold'
+		| 'laurel-classic'
+		| 'laurel-diamond'
+		| 'crown-flourish'
+		| 'crown-baroque'
+		| 'crown-badge'
+		| 'crown-ring';
+	vipCorner?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+	vipSize?: number;
 }
 
 export interface Template {

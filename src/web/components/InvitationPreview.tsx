@@ -2,10 +2,12 @@ import { forwardRef, memo, useRef, useState, type PointerEvent } from 'react';
 import type { TemplateConfig } from '../lib/api';
 import { getInvitationBackgroundUrl, getHeroOverlayStyle } from '../lib/invitationStyle';
 import {
+	buildGoogleMapsUrl,
 	getHeroFillBackground,
 	resolveElegantBorderColor,
 	resolveTitlePosition,
 } from '@shared/utils';
+import { resolveVipBadge, vipArtFlipClass } from '@shared/vipStyles';
 
 const DEFAULT_HOST_FONT_SIZE = 15;
 
@@ -75,6 +77,8 @@ export const InvitationPreview = memo(forwardRef<HTMLDivElement, PreviewProps>(f
 	const fallbackBackground = getHeroFillBackground(config);
 	const overlayStyle = getHeroOverlayStyle(config);
 	const elegantBorder = resolveElegantBorderColor(config);
+	const mapsUrl = buildGoogleMapsUrl(location);
+	const vipBadge = resolveVipBadge(config);
 	const imgCrossOrigin = bgUrl && !bgUrl.startsWith('blob:') ? ('anonymous' as const) : undefined;
 	const canDragBackground =
 		!exportMode && editableBackground && !!bgUrl && !!onBackgroundPositionChange;
@@ -229,6 +233,28 @@ export const InvitationPreview = memo(forwardRef<HTMLDivElement, PreviewProps>(f
 				>
 					{title || 'Mi invitación'}
 				</h2>
+				{vipBadge && vipBadge.overlay && vipBadge.discUrl ? (
+					<div
+						className={`vip-badge vip-badge--overlay vip-badge--${vipBadge.corner}`}
+						style={{ width: `${vipBadge.size}%` }}
+					>
+						<img
+							src={vipBadge.url}
+							alt=""
+							className={`vip-badge-art ${vipArtFlipClass(vipBadge.corner)}`}
+							draggable={false}
+						/>
+						<img src={vipBadge.discUrl} alt="" className="vip-badge-disc" draggable={false} />
+					</div>
+				) : vipBadge ? (
+					<img
+						src={vipBadge.url}
+						alt=""
+						className={`vip-badge vip-badge--${vipBadge.corner}`}
+						style={{ width: `${vipBadge.size}%` }}
+						draggable={false}
+					/>
+				) : null}
 			</div>
 			<div
 				className="preview-body"
@@ -253,7 +279,20 @@ export const InvitationPreview = memo(forwardRef<HTMLDivElement, PreviewProps>(f
 				>
 					📅 {formattedDate}
 				</p>
-				{location && <p className="preview-location">📍 {location}</p>}
+				{location && mapsUrl && !exportMode ? (
+					<p className="preview-location">
+						<a
+							className="preview-location-link"
+							href={mapsUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							📍 {location}
+						</a>
+					</p>
+				) : location ? (
+					<p className="preview-location">📍 {location}</p>
+				) : null}
 				{message && <p className="preview-message">{message}</p>}
 			</div>
 		</div>

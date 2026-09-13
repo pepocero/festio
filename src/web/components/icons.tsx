@@ -85,6 +85,26 @@ export function EmailIcon() {
 	);
 }
 
+export function CornerIcon({ corner }: { corner: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' }) {
+	const cx = corner.endsWith('left') ? 8 : 16;
+	const cy = corner.startsWith('top') ? 8 : 16;
+	return (
+		<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+			<rect x="3.5" y="3.5" width="17" height="17" rx="3" />
+			<circle cx={cx} cy={cy} r="2.6" fill="currentColor" stroke="none" />
+		</svg>
+	);
+}
+
+export function MapPinIcon() {
+	return (
+		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+			<path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11z" strokeLinejoin="round" />
+			<circle cx="12" cy="10" r="2.5" />
+		</svg>
+	);
+}
+
 export function ShareIcon() {
 	return (
 		<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>

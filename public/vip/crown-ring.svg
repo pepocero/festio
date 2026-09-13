@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="crGold" x1="14%" y1="0%" x2="86%" y2="100%">
+      <stop offset="0%" stop-color="#fff8d0"/>
+      <stop offset="44%" stop-color="#e8c44a"/>
+      <stop offset="100%" stop-color="#8a6410"/>
+    </linearGradient>
+    <filter id="crShadow" x="-18%" y="-18%" width="136%" height="136%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.2" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <g filter="url(#crShadow)" fill="url(#crGold)">
+    <circle cx="100" cy="118" r="58" fill="none" stroke="url(#crGold)" stroke-width="6"/>
+    <path d="M64 52 L76 78 H124 L136 52 L112 78 L100 42 L88 78 Z"/>
+    <rect x="74" y="76" width="52" height="6" rx="1.5"/>
+    <circle cx="64" cy="50" r="4.2"/>
+    <circle cx="100" cy="38" r="5"/>
+    <circle cx="136" cy="50" r="4.2"/>
+    <text x="100" y="130" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" letter-spacing="4">VIP</text>
+  </g>
+</svg>

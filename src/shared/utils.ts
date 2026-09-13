@@ -43,6 +43,37 @@ export function buildGoogleCalendarUrl(params: {
 	return `https://calendar.google.com/calendar/render?${qs.toString()}`;
 }
 
+export function buildGoogleMapsUrl(location: string): string | null {
+	const trimmed = location.trim();
+	if (!trimmed) return null;
+
+	if (/^https?:\/\//i.test(trimmed)) {
+		try {
+			const url = new URL(trimmed);
+			const host = url.hostname.toLowerCase();
+			const isGoogleHost =
+				host === 'maps.app.goo.gl' ||
+				host === 'goo.gl' ||
+				host.startsWith('maps.google.') ||
+				host === 'www.google.com' ||
+				host.startsWith('www.google.') ||
+				host.startsWith('google.');
+			const isMapsPath =
+				host === 'maps.app.goo.gl' ||
+				host.startsWith('maps.google.') ||
+				url.pathname.startsWith('/maps') ||
+				(host === 'goo.gl' && url.pathname.startsWith('/maps'));
+			if (isGoogleHost && isMapsPath) {
+				return url.toString();
+			}
+		} catch {
+			// Dirección de texto: se busca en Maps
+		}
+	}
+
+	return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trimmed)}`;
+}
+
 function toGoogleCalendarDate(iso: string): string {
 	const d = new Date(iso);
 	const pad = (n: number) => String(n).padStart(2, '0');
@@ -81,6 +112,10 @@ export function mergeConfig(base: TemplateConfig, override?: Partial<TemplateCon
 		heroOverlay: override.heroOverlay ?? base.heroOverlay,
 		titlePositionX: override.titlePositionX ?? base.titlePositionX,
 		titlePositionY: override.titlePositionY ?? base.titlePositionY,
+		vipEnabled: override.vipEnabled ?? base.vipEnabled,
+		vipStyle: override.vipStyle ?? base.vipStyle,
+		vipCorner: override.vipCorner ?? base.vipCorner,
+		vipSize: override.vipSize ?? base.vipSize,
 	};
 }
 

@@ -25,6 +25,28 @@ export const templateConfigSchema = z.object({
 	heroOverlay: z.boolean().optional(),
 	titlePositionX: z.number().min(0).max(100).optional(),
 	titlePositionY: z.number().min(0).max(100).optional(),
+	vipEnabled: z.boolean().optional(),
+	vipStyle: z
+		.enum([
+			'seal-gold',
+			'ribbon',
+			'medallion',
+			'diamond',
+			'floral',
+			'noir',
+			'crown-gold',
+			'crown-royal',
+			'laurel-gold',
+			'laurel-classic',
+			'laurel-diamond',
+			'crown-flourish',
+			'crown-baroque',
+			'crown-badge',
+			'crown-ring',
+		])
+		.optional(),
+	vipCorner: z.enum(['top-left', 'top-right', 'bottom-left', 'bottom-right']).optional(),
+	vipSize: z.number().min(2).max(42).optional(),
 });
 
 export const registerSchema = z.object({

@@ -10,9 +10,10 @@ import { DateTimeField, dateTimeToIso } from '../components/DateTimeField';
 import { CollapsibleSection } from '../components/CollapsibleSection';
 import { ShareButtons } from '../components/ShareButtons';
 import { BackgroundPicker } from '../components/BackgroundPicker';
-import { HomeIcon, BackArrowIcon } from '../components/icons';
+import { VipBadgePicker } from '../components/VipBadgePicker';
+import { HomeIcon, BackArrowIcon, MapPinIcon } from '../components/icons';
 
-import { FONT_DISPLAY_NAMES, FONT_OPTIONS } from '@shared/utils';
+import { FONT_DISPLAY_NAMES, FONT_OPTIONS, buildGoogleMapsUrl } from '@shared/utils';
 const HOST_FONT_SIZES = [
 	{ value: 12, label: 'Pequeño (12 px)' },
 	{ value: 15, label: 'Normal (15 px)' },
@@ -214,6 +215,7 @@ export function EditorPage() {
 		config.backgroundImage
 	);
 	const hasCustomBackground = !!(previewImageUrl || config.customBackgroundKey);
+	const mapsUrl = buildGoogleMapsUrl(location);
 
 	const handleBackgroundPositionChange = (x: number, y: number) => {
 		updateConfig({ backgroundPositionX: x, backgroundPositionY: y });
@@ -352,8 +354,27 @@ export function EditorPage() {
 								</select>
 							</label>
 							<label>
-								Lugar
-								<input value={location} onChange={(e) => setLocation(e.target.value)} maxLength={500} />
+								Dirección
+								<span className="editor-location-row">
+									<input
+										value={location}
+										onChange={(e) => setLocation(e.target.value)}
+										maxLength={500}
+										placeholder="Calle, número, ciudad"
+									/>
+									{mapsUrl && (
+										<a
+											href={mapsUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="btn btn-ghost btn-icon"
+											aria-label="Abrir en Google Maps"
+											title="Abrir en Google Maps"
+										>
+											<MapPinIcon />
+										</a>
+									)}
+								</span>
 							</label>
 							<label className="editor-form-last">
 								Mensaje
@@ -368,7 +389,7 @@ export function EditorPage() {
 
 						<CollapsibleSection title="Personalización" defaultOpen={!isMobile}>
 							<p className="editor-help-link text-muted">
-								¿Cómo cambiar colores, fuentes o la imagen?{' '}
+								¿Cómo cambiar colores, fuentes, VIP o la imagen?{' '}
 								<Link to="/ayuda" target="_blank" rel="noopener noreferrer">
 									Ver guía de ayuda
 								</Link>
@@ -582,6 +603,7 @@ export function EditorPage() {
 									<option value="elegant">Elegante</option>
 								</select>
 							</label>
+							<VipBadgePicker config={config} onChange={updateConfig} />
 							<div className="upload-section editor-form-last">
 								<label>Imagen de fondo</label>
 								<BackgroundPicker

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="cbgGold" x1="18%" y1="0%" x2="82%" y2="100%">
+      <stop offset="0%" stop-color="#fff6c8"/>
+      <stop offset="46%" stop-color="#e4c04a"/>
+      <stop offset="100%" stop-color="#8a6410"/>
+    </linearGradient>
+    <radialGradient id="cbgDisk" cx="40%" cy="32%" r="70%">
+      <stop offset="0%" stop-color="#24183a"/>
+      <stop offset="100%" stop-color="#0c0816"/>
+    </radialGradient>
+    <filter id="cbgShadow" x="-16%" y="-16%" width="132%" height="132%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.4" flood-color="#000" flood-opacity="0.36"/>
+    </filter>
+  </defs>
+  <g filter="url(#cbgShadow)">
+    <circle cx="100" cy="100" r="72" fill="url(#cbgDisk)" stroke="url(#cbgGold)" stroke-width="3.5"/>
+    <path d="M78 62 L86 78 H114 L122 62 L108 78 L100 58 L92 78 Z" fill="url(#cbgGold)"/>
+    <circle cx="78" cy="60" r="3.4" fill="url(#cbgGold)"/>
+    <circle cx="100" cy="54" r="4" fill="url(#cbgGold)"/>
+    <circle cx="122" cy="60" r="3.4" fill="url(#cbgGold)"/>
+    <text x="100" y="128" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="36" font-weight="700" letter-spacing="5" fill="url(#cbgGold)">VIP</text>
+  </g>
+</svg>

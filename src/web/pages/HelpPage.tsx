@@ -83,6 +83,16 @@ const HELP_SECTIONS = [
 		],
 	},
 	{
+		id: 'vip',
+		title: 'Sello de invitado VIP',
+		steps: [
+			'En Personalización, activa Mostrar sello VIP para añadir una imagen elegante de invitado VIP.',
+			'Elige el formato: sello, cinta, medallón, diamante, floral, noche, coronas, laureles o anillos dorados.',
+			'Ajusta el tamaño con el deslizador y colócalo en una de las cuatro esquinas de la cabecera (donde va la imagen de fondo), no en el texto de debajo.',
+			'Desactívalo cuando no quieras que aparezca. El cambio se ve al instante en la vista previa; guarda o publica para conservarlo.',
+		],
+	},
+	{
 		id: 'publicar',
 		title: 'Guardar, publicar y compartir',
 		steps: [

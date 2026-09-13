@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="vipLaurelGoldFill" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#fff8dc"/>
+      <stop offset="100%" stop-color="#e8d48a"/>
+    </radialGradient>
+    <linearGradient id="vipLaurelGoldRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff1b8"/>
+      <stop offset="55%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#7a5610"/>
+    </linearGradient>
+    <filter id="vipLaurelGoldShadow" x="-16%" y="-16%" width="132%" height="132%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.6" flood-color="#3d2a08" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <g filter="url(#vipLaurelGoldShadow)">
+    <circle cx="100" cy="100" r="78" fill="url(#vipLaurelGoldFill)" stroke="url(#vipLaurelGoldRing)" stroke-width="5"/>
+    <circle cx="100" cy="100" r="68" fill="none" stroke="#c9a227" stroke-width="1.4" opacity="0.7"/>
+    <text x="100" y="114" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" letter-spacing="4" fill="#4a3606">VIP</text>
+  </g>
+</svg>

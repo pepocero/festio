@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="ldGold" x1="15%" y1="0%" x2="85%" y2="100%">
+      <stop offset="0%" stop-color="#fff6c8"/>
+      <stop offset="42%" stop-color="#f0d56a"/>
+      <stop offset="100%" stop-color="#9a6f12"/>
+    </linearGradient>
+    <radialGradient id="ldDisk" cx="38%" cy="30%" r="72%">
+      <stop offset="0%" stop-color="#2a2a2e"/>
+      <stop offset="100%" stop-color="#0b0b0d"/>
+    </radialGradient>
+    <filter id="ldShadow" x="-18%" y="-18%" width="136%" height="136%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.4" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <g filter="url(#ldShadow)">
+    <circle cx="100" cy="100" r="78" fill="url(#ldDisk)" stroke="url(#ldGold)" stroke-width="4"/>
+    <circle cx="100" cy="100" r="70" fill="none" stroke="#d4af37" stroke-width="0.9" opacity="0.55"/>
+    <path d="M100 48 L109 64 L100 60 L91 64 Z" fill="url(#ldGold)"/>
+    <text x="100" y="118" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="700" letter-spacing="4" fill="url(#ldGold)">VIP</text>
+  </g>
+</svg>

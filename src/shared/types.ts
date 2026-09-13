@@ -33,6 +33,29 @@ export interface TemplateConfig {
 	titlePositionX?: number;
 	/** Posición vertical del título en la cabecera (0–100 %) */
 	titlePositionY?: number;
+	/** Muestra el sello VIP de invitado */
+	vipEnabled?: boolean;
+	/** Formato del sello VIP */
+	vipStyle?:
+		| 'seal-gold'
+		| 'ribbon'
+		| 'medallion'
+		| 'diamond'
+		| 'floral'
+		| 'noir'
+		| 'crown-gold'
+		| 'crown-royal'
+		| 'laurel-gold'
+		| 'laurel-classic'
+		| 'laurel-diamond'
+		| 'crown-flourish'
+		| 'crown-baroque'
+		| 'crown-badge'
+		| 'crown-ring';
+	/** Esquina de la tarjeta donde se coloca el sello */
+	vipCorner?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+	/** Tamaño del sello respecto a la cabecera (porcentaje) */
+	vipSize?: number;
 }
 
 export interface User {

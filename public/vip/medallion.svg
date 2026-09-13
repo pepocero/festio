@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="vipMedFill" cx="40%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#fff8dc"/>
+      <stop offset="50%" stop-color="#e6c56a"/>
+      <stop offset="100%" stop-color="#8f6a1c"/>
+    </radialGradient>
+    <linearGradient id="vipMedRing" x1="15%" y1="10%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#fff4c2"/>
+      <stop offset="100%" stop-color="#6f5210"/>
+    </linearGradient>
+    <filter id="vipMedShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#3d2a08" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+  <g filter="url(#vipMedShadow)">
+    <ellipse cx="100" cy="100" rx="78" ry="90" fill="url(#vipMedFill)" stroke="url(#vipMedRing)" stroke-width="6"/>
+    <ellipse cx="100" cy="100" rx="66" ry="78" fill="none" stroke="#f7e7b0" stroke-width="1.6"/>
+    <path d="M100 22 C112 38 128 42 128 42 C116 50 112 62 100 56 C88 62 84 50 72 42 C72 42 88 38 100 22 Z" fill="#fff3c4" opacity="0.7"/>
+    <path d="M100 178 C88 162 72 158 72 158 C84 150 88 138 100 144 C112 138 116 150 128 158 C128 158 112 162 100 178 Z" fill="#fff3c4" opacity="0.55"/>
+    <text x="100" y="88" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="13" letter-spacing="3.5" fill="#5c4308">INVITADO</text>
+    <text x="100" y="124" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="36" font-weight="700" letter-spacing="3" fill="#4a3606">VIP</text>
+  </g>
+</svg>
