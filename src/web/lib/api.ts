@@ -40,6 +40,7 @@ export interface TemplateConfig {
 	heroOverlay?: boolean;
 	titlePositionX?: number;
 	titlePositionY?: number;
+	hideTitle?: boolean;
 	vipEnabled?: boolean;
 	vipStyle?:
 		| 'seal-gold'

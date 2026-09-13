@@ -83,7 +83,8 @@ export const InvitationPreview = memo(forwardRef<HTMLDivElement, PreviewProps>(f
 	const imgCrossOrigin = bgUrl && !bgUrl.startsWith('blob:') ? ('anonymous' as const) : undefined;
 	const canDragBackground =
 		!exportMode && editableBackground && !!bgUrl && !!onBackgroundPositionChange;
-	const canDragTitle = !exportMode && editableTitlePosition && !!onTitlePositionChange;
+	const hideTitle = config.hideTitle ?? false;
+	const canDragTitle = !hideTitle && !exportMode && editableTitlePosition && !!onTitlePositionChange;
 
 	const formattedDate = eventDate
 		? new Intl.DateTimeFormat('es-ES', {
@@ -220,20 +221,22 @@ export const InvitationPreview = memo(forwardRef<HTMLDivElement, PreviewProps>(f
 						↕ Arrastra el título para ubicarlo
 					</span>
 				)}
-				<h2
-					className={`preview-hero-title${canDragTitle ? ' preview-hero-title--draggable' : ''}${draggingTitle ? ' is-dragging' : ''}`}
-					style={{
-						fontFamily: `'${config.fonts.title}', serif`,
-						left: `${titlePos.x}%`,
-						top: `${titlePos.y}%`,
-					}}
-					onPointerDown={onTitlePointerDown}
-					onPointerMove={onTitlePointerMove}
-					onPointerUp={onTitlePointerUp}
-					onPointerCancel={onTitlePointerUp}
-				>
-					{title || 'Mi invitación'}
-				</h2>
+				{!hideTitle && (
+					<h2
+						className={`preview-hero-title${canDragTitle ? ' preview-hero-title--draggable' : ''}${draggingTitle ? ' is-dragging' : ''}`}
+						style={{
+							fontFamily: `'${config.fonts.title}', serif`,
+							left: `${titlePos.x}%`,
+							top: `${titlePos.y}%`,
+						}}
+						onPointerDown={onTitlePointerDown}
+						onPointerMove={onTitlePointerMove}
+						onPointerUp={onTitlePointerUp}
+						onPointerCancel={onTitlePointerUp}
+					>
+						{title || 'Mi invitación'}
+					</h2>
+				)}
 				{vipBadge && vipBadge.overlay && vipBadge.discUrl ? (
 					<div
 						className={`vip-badge vip-badge--overlay vip-badge--${vipBadge.corner}`}

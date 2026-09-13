@@ -651,6 +651,71 @@ a:not(.btn):hover {
 	color: var(--color-primary);
 }
 
+.customize-groups {
+	display: flex;
+	flex-direction: column;
+	gap: 0.85rem;
+}
+
+.customize-group {
+	border-radius: 0.9rem;
+	padding: 0.85rem 0.9rem 0.55rem;
+}
+
+.customize-group-title {
+	margin: 0 0 0.7rem;
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	opacity: 0.72;
+}
+
+.customize-group--colors {
+	background: #f3e8ff;
+}
+
+.customize-group--fonts {
+	background: #fff3df;
+}
+
+.customize-group--title {
+	background: #e7f1fc;
+}
+
+.customize-group--background {
+	background: #e7f6ee;
+}
+
+.customize-group--layout {
+	background: #fde8ef;
+}
+
+.customize-group--vip {
+	background: #fff6dd;
+}
+
+.customize-group .bg-position-controls {
+	margin-top: 0;
+	padding-top: 0;
+	border-top: none;
+}
+
+.customize-group .vip-picker {
+	margin: 0;
+	padding-top: 0;
+	border-top: none;
+}
+
+.customize-group--vip .vip-picker > .bg-position-label {
+	display: none;
+}
+
+.customize-group label:last-child,
+.customize-group .upload-section {
+	margin-bottom: 0;
+}
+
 .editor-form label {
 	display: flex;
 	flex-direction: column;

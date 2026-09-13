@@ -8,7 +8,7 @@ const HELP_SECTIONS = [
 		steps: [
 			'Entra en Mis invitaciones y abre una invitación existente, o crea una nueva desde una plantilla.',
 			'En el editor verás la vista previa a la izquierda (o arriba en móvil) y el formulario a la derecha.',
-			'Abre la sección Personalización: ahí están todos los controles de diseño de la tarjeta.',
+			'Abre la sección Personalización: las opciones están agrupadas por categoría (Colores, Fuentes, Título, Fondo, Estilo e Invitado VIP).',
 			'Los cambios se ven al instante en la vista previa. Pulsa Guardar para no perderlos.',
 		],
 	},
@@ -46,7 +46,8 @@ const HELP_SECTIONS = [
 		id: 'titulo',
 		title: 'Posición del título',
 		steps: [
-			'En Personalización, bloque Posición del título, activa Activar mover título.',
+			'En Personalización, bloque Posición del título, marca Ocultar título si no quieres que se vea en la tarjeta.',
+			'Si el título está visible, activa Activar mover título.',
 			'Arrastra el título en la vista previa o usa los deslizadores horizontal y vertical.',
 			'Los botones Centro, Arriba, Abajo, Izq. y Der. colocan el título en un punto rápido.',
 			'Desactiva el modo mover cuando termines para no moverlo por accidente al deslizar en móvil.',

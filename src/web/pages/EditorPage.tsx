@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api, type Invitation, type TemplateConfig } from '../lib/api';
 import { compressImageForUpload } from '../lib/compressImage';
@@ -28,6 +28,23 @@ const TIMEZONES = [
 	'America/Buenos_Aires',
 	'America/New_York',
 ];
+
+function CustomizeGroup({
+	title,
+	tone,
+	children,
+}: {
+	title: string;
+	tone: 'colors' | 'fonts' | 'title' | 'background' | 'layout' | 'vip';
+	children: ReactNode;
+}) {
+	return (
+		<div className={`customize-group customize-group--${tone}`}>
+			<p className="customize-group-title">{title}</p>
+			{children}
+		</div>
+	);
+}
 
 export function EditorPage() {
 	const { id } = useParams<{ id: string }>();
@@ -397,6 +414,8 @@ export function EditorPage() {
 									Ver guía de ayuda
 								</Link>
 							</p>
+							<div className="customize-groups">
+							<CustomizeGroup title="Colores" tone="colors">
 							<div className="color-grid">
 								<ColorSwatchField
 									id="color-primary"
@@ -443,6 +462,8 @@ export function EditorPage() {
 									<span className="toggle-option-text">Filtro color en imagen</span>
 								</label>
 							)}
+							</CustomizeGroup>
+							<CustomizeGroup title="Fuentes" tone="fonts">
 							<label>
 								Fuente del título
 								<select
@@ -469,67 +490,86 @@ export function EditorPage() {
 									))}
 								</select>
 							</label>
+							</CustomizeGroup>
+							<CustomizeGroup title="Título" tone="title">
 							<div className="bg-position-controls">
 								<p className="bg-position-label">Posición del título</p>
-								<p className="bg-position-hint">
-									Activa el modo y arrastra el título en la vista previa, o usa los controles
-								</p>
 								<label className="toggle-option">
 									<input
 										type="checkbox"
-										checked={moveTitleMode}
-										onChange={(e) => setMoveTitleMode(e.target.checked)}
+										checked={config.hideTitle ?? false}
+										onChange={(e) => {
+											updateConfig({ hideTitle: e.target.checked });
+											if (e.target.checked) setMoveTitleMode(false);
+										}}
 									/>
-									<span className="toggle-option-text">Activar mover título</span>
+									<span className="toggle-option-text">Ocultar título</span>
 								</label>
-								<label>
-									Horizontal ({config.titlePositionX ?? 50}%)
-									<input
-										type="range"
-										min={0}
-										max={100}
-										value={config.titlePositionX ?? 50}
-										onChange={(e) =>
-											updateConfig({ titlePositionX: Number(e.target.value) })
-										}
-									/>
-								</label>
-								<label>
-									Vertical ({config.titlePositionY ?? 88}%)
-									<input
-										type="range"
-										min={0}
-										max={100}
-										value={config.titlePositionY ?? 88}
-										onChange={(e) =>
-											updateConfig({ titlePositionY: Number(e.target.value) })
-										}
-									/>
-								</label>
-								<div className="bg-position-presets">
-									{[
-										{ label: 'Centro', x: 50, y: 50 },
-										{ label: 'Arriba', x: 50, y: 18 },
-										{ label: 'Abajo', x: 50, y: 88 },
-										{ label: 'Izq.', x: 18, y: 50 },
-										{ label: 'Der.', x: 82, y: 50 },
-									].map((preset) => (
-										<button
-											key={preset.label}
-											type="button"
-											className="btn btn-ghost btn-sm"
-											onClick={() =>
-												updateConfig({
-													titlePositionX: preset.x,
-													titlePositionY: preset.y,
-												})
-											}
-										>
-											{preset.label}
-										</button>
-									))}
-								</div>
+								{!(config.hideTitle ?? false) && (
+									<>
+										<p className="bg-position-hint">
+											Activa el modo y arrastra el título en la vista previa, o usa los controles
+										</p>
+										<label className="toggle-option">
+											<input
+												type="checkbox"
+												checked={moveTitleMode}
+												onChange={(e) => setMoveTitleMode(e.target.checked)}
+											/>
+											<span className="toggle-option-text">Activar mover título</span>
+										</label>
+										<label>
+											Horizontal ({config.titlePositionX ?? 50}%)
+											<input
+												type="range"
+												min={0}
+												max={100}
+												value={config.titlePositionX ?? 50}
+												onChange={(e) =>
+													updateConfig({ titlePositionX: Number(e.target.value) })
+												}
+											/>
+										</label>
+										<label>
+											Vertical ({config.titlePositionY ?? 88}%)
+											<input
+												type="range"
+												min={0}
+												max={100}
+												value={config.titlePositionY ?? 88}
+												onChange={(e) =>
+													updateConfig({ titlePositionY: Number(e.target.value) })
+												}
+											/>
+										</label>
+										<div className="bg-position-presets">
+											{[
+												{ label: 'Centro', x: 50, y: 50 },
+												{ label: 'Arriba', x: 50, y: 18 },
+												{ label: 'Abajo', x: 50, y: 88 },
+												{ label: 'Izq.', x: 18, y: 50 },
+												{ label: 'Der.', x: 82, y: 50 },
+											].map((preset) => (
+												<button
+													key={preset.label}
+													type="button"
+													className="btn btn-ghost btn-sm"
+													onClick={() =>
+														updateConfig({
+															titlePositionX: preset.x,
+															titlePositionY: preset.y,
+														})
+													}
+												>
+													{preset.label}
+												</button>
+											))}
+										</div>
+									</>
+								)}
 							</div>
+							</CustomizeGroup>
+							<CustomizeGroup title="Fondo" tone="background">
 							{hasBackgroundImage && (
 								<div className="bg-position-controls">
 									<p className="bg-position-label">Posición de la imagen</p>
@@ -593,21 +633,7 @@ export function EditorPage() {
 									</div>
 								</div>
 							)}
-							<label>
-								Estilo de diseño
-								<select
-									value={config.layout}
-									onChange={(e) =>
-										updateConfig({ layout: e.target.value as TemplateConfig['layout'] })
-									}
-								>
-									<option value="classic">Clásico</option>
-									<option value="modern">Moderno</option>
-									<option value="elegant">Elegante</option>
-								</select>
-							</label>
-							<VipBadgePicker config={config} onChange={updateConfig} />
-							<div className="upload-section editor-form-last">
+							<div className="upload-section">
 								<label>Imagen de fondo</label>
 								<BackgroundPicker
 									config={config}
@@ -651,6 +677,26 @@ export function EditorPage() {
 										</button>
 									)}
 								</div>
+							</div>
+							</CustomizeGroup>
+							<CustomizeGroup title="Estilo" tone="layout">
+							<label>
+								Estilo de diseño
+								<select
+									value={config.layout}
+									onChange={(e) =>
+										updateConfig({ layout: e.target.value as TemplateConfig['layout'] })
+									}
+								>
+									<option value="classic">Clásico</option>
+									<option value="modern">Moderno</option>
+									<option value="elegant">Elegante</option>
+								</select>
+							</label>
+							</CustomizeGroup>
+							<CustomizeGroup title="Invitado VIP" tone="vip">
+							<VipBadgePicker config={config} onChange={updateConfig} />
+							</CustomizeGroup>
 							</div>
 						</CollapsibleSection>
 					</form>

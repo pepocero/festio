@@ -252,7 +252,7 @@ export function renderPublicInvitationHtml(params: {
   <div class="page">
     <article class="card">
       <header class="card-hero">
-        <h1>${escapeHtml(title)}</h1>
+        ${config.hideTitle ? '' : `<h1>${escapeHtml(title)}</h1>`}
         ${vipMarkup}
       </header>
       <div class="card-body">

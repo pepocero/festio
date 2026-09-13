@@ -112,6 +112,7 @@ export function mergeConfig(base: TemplateConfig, override?: Partial<TemplateCon
 		heroOverlay: override.heroOverlay ?? base.heroOverlay,
 		titlePositionX: override.titlePositionX ?? base.titlePositionX,
 		titlePositionY: override.titlePositionY ?? base.titlePositionY,
+		hideTitle: override.hideTitle ?? base.hideTitle,
 		vipEnabled: override.vipEnabled ?? base.vipEnabled,
 		vipStyle: override.vipStyle ?? base.vipStyle,
 		vipCorner: override.vipCorner ?? base.vipCorner,

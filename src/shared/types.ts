@@ -33,6 +33,8 @@ export interface TemplateConfig {
 	titlePositionX?: number;
 	/** Posición vertical del título en la cabecera (0–100 %) */
 	titlePositionY?: number;
+	/** Oculta el título en la tarjeta */
+	hideTitle?: boolean;
 	/** Muestra el sello VIP de invitado */
 	vipEnabled?: boolean;
 	/** Formato del sello VIP */

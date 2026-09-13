@@ -25,6 +25,7 @@ export const templateConfigSchema = z.object({
 	heroOverlay: z.boolean().optional(),
 	titlePositionX: z.number().min(0).max(100).optional(),
 	titlePositionY: z.number().min(0).max(100).optional(),
+	hideTitle: z.boolean().optional(),
 	vipEnabled: z.boolean().optional(),
 	vipStyle: z
 		.enum([
