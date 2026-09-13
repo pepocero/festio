@@ -8,6 +8,7 @@ import {
 	resolveTitlePosition,
 } from '@shared/utils';
 import { resolveVipBadge, vipArtFlipClass } from '@shared/vipStyles';
+import { NavigateIcon } from './icons';
 
 const DEFAULT_HOST_FONT_SIZE = 15;
 
@@ -279,19 +280,28 @@ export const InvitationPreview = memo(forwardRef<HTMLDivElement, PreviewProps>(f
 				>
 					📅 {formattedDate}
 				</p>
-				{location && mapsUrl && !exportMode ? (
+				{location ? (
 					<p className="preview-location">
-						<a
-							className="preview-location-link"
-							href={mapsUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							📍 {location}
-						</a>
+						<span className="preview-location-text">{location}</span>
+						{mapsUrl &&
+							(exportMode ? (
+								<span className="preview-location-nav" aria-hidden>
+									<NavigateIcon />
+									Cómo llegar
+								</span>
+							) : (
+								<a
+									className="preview-location-nav"
+									href={mapsUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									title="Cómo llegar"
+								>
+									<NavigateIcon />
+									Cómo llegar
+								</a>
+							))}
 					</p>
-				) : location ? (
-					<p className="preview-location">📍 {location}</p>
 				) : null}
 				{message && <p className="preview-message">{message}</p>}
 			</div>

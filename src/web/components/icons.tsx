@@ -105,6 +105,14 @@ export function MapPinIcon() {
 	);
 }
 
+export function NavigateIcon() {
+	return (
+		<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+			<path d="M12 3.1 4.15 20.7c-.28.62.4 1.22.96.9L12 18.05l6.89 3.55c.56.32 1.24-.28.96-.9L12 3.1z" />
+		</svg>
+	);
+}
+
 export function ShareIcon() {
 	return (
 		<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>

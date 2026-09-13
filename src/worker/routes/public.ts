@@ -28,7 +28,8 @@ publicRoutes.get('/:slug', async (c) => {
 	return c.html(html, 200, {
 		'X-Content-Type-Options': 'nosniff',
 		'X-Frame-Options': 'SAMEORIGIN',
-		'Cache-Control': 'public, max-age=60',
+		'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+		Pragma: 'no-cache',
 	});
 });
 

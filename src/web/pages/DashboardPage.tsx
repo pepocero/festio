@@ -129,7 +129,7 @@ export function DashboardPage() {
 												<CopyLinkIcon />
 											</button>
 											<a
-												href={inv.public_url}
+												href={`${inv.public_url}?v=${encodeURIComponent(inv.updated_at)}`}
 												target="_blank"
 												rel="noopener noreferrer"
 												className="btn btn-view-invitation btn-sm btn-icon"

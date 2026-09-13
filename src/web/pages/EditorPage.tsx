@@ -114,9 +114,9 @@ export function EditorPage() {
 		);
 	};
 
-	const handleSave = async (e?: FormEvent) => {
+	const handleSave = async (e?: FormEvent): Promise<boolean> => {
 		e?.preventDefault();
-		if (!id || !config) return;
+		if (!id || !config) return false;
 		setSaving(true);
 		setError('');
 		setSuccess('');
@@ -133,8 +133,10 @@ export function EditorPage() {
 			});
 			setInvitation(updated);
 			setSuccess('Guardado correctamente');
+			return true;
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Error al guardar');
+			return false;
 		} finally {
 			setSaving(false);
 		}
@@ -142,7 +144,8 @@ export function EditorPage() {
 
 	const handlePublish = async () => {
 		if (!id) return;
-		await handleSave();
+		const saved = await handleSave();
+		if (!saved) return;
 		setPublishing(true);
 		setError('');
 		try {
@@ -265,7 +268,7 @@ export function EditorPage() {
 					<div className="publish-box">
 						<h3>Tu invitación está publicada</h3>
 						<a
-							href={invitation.public_url}
+							href={`${invitation.public_url}?v=${encodeURIComponent(invitation.updated_at)}`}
 							target="_blank"
 							rel="noopener noreferrer"
 							className="btn btn-view-invitation"

@@ -186,51 +186,54 @@ export function renderPublicInvitationHtml(params: {
       border-radius: 0.75rem;
       border-left: 4px solid ${config.colors.primary};
     }
-    .location { margin: 0.75rem 0; opacity: 0.9; }
-    .location-link { color: inherit; text-decoration: underline; text-underline-offset: 0.15em; }
-    .location-link:hover { opacity: 1; }
+    .location {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.45rem;
+      margin: 0.75rem 0;
+      opacity: 0.95;
+    }
+    .location-text { flex: 1; min-width: 0; }
+    .location-nav {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.5rem 0.2rem 0.35rem;
+      border-radius: 999px;
+      color: #1a73e8;
+      background: rgba(26, 115, 232, 0.12);
+      text-decoration: none;
+      font-size: 0.7rem;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .location-nav:hover { background: rgba(26, 115, 232, 0.2); }
+    .location-nav svg { display: block; width: 14px; height: 14px; }
     .message { margin-top: 1rem; font-style: italic; opacity: 0.85; white-space: pre-line; }
     .actions {
       display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-top: 1.75rem;
+      justify-content: center;
+      margin-top: 1.25rem;
     }
-    .btn {
-      display: flex;
+    .btn-calendar {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      padding: 0.875rem 1.25rem;
-      border-radius: 0.75rem;
-      font-size: 1rem;
+      gap: 0.4rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
       font-weight: 600;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.15s, opacity 0.15s;
-    }
-    .btn:active { transform: scale(0.98); }
-    .btn-calendar {
-      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      letter-spacing: 0.01em;
       color: #fff;
-      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+      background: ${config.colors.primary};
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
       text-decoration: none;
     }
-    .btn-calendar:hover {
-      background: linear-gradient(135deg, #6d28d9 0%, #db2777 100%);
-      color: #fff;
-    }
-    .btn-maps {
-      background: #1a73e8;
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35);
-      text-decoration: none;
-    }
-    .btn-maps:hover {
-      background: #1558b0;
-      color: #fff;
-    }
+    .btn-calendar:hover { filter: brightness(0.94); }
+    .btn-calendar svg { display: block; }
     .layout-elegant .card { border: 2px solid ${elegantBorder}; border-radius: 0.25rem; box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
     .layout-modern .card { border-radius: 0.35rem; box-shadow: 0 10px 28px rgba(15,23,42,0.14); }
     .layout-modern .card-hero h1 { font-size: 1.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
@@ -253,11 +256,16 @@ export function renderPublicInvitationHtml(params: {
       <div class="card-body">
         ${invitation.host_name ? `<p class="host"><span class="host-label">Organiza:</span> ${escapeHtml(invitation.host_name)}</p>` : ''}
         <p class="date">📅 ${escapeHtml(eventDateFormatted)}</p>
-        ${mapsUrl ? `<p class="location"><a class="location-link" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer">📍 ${escapeHtml(invitation.location)}</a></p>` : ''}
+        ${invitation.location?.trim()
+					? `<p class="location"><span class="location-text">${escapeHtml(invitation.location)}</span>${
+							mapsUrl
+								? `<a class="location-nav" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer" title="Cómo llegar"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.1 4.15 20.7c-.28.62.4 1.22.96.9L12 18.05l6.89 3.55c.56.32 1.24-.28.96-.9L12 3.1z"/></svg>Cómo llegar</a>`
+								: ''
+						}</p>`
+					: ''}
         ${invitation.message ? `<p class="message">${escapeHtml(invitation.message)}</p>` : ''}
-        ${calendarUrl || mapsUrl ? `<div class="actions">
-          ${calendarUrl ? `<a class="btn btn-calendar" href="${escapeHtml(calendarUrl)}" target="_blank" rel="noopener noreferrer">📅 Añadir a Google Calendar</a>` : ''}
-          ${mapsUrl ? `<a class="btn btn-maps" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer">📍 Abrir en Google Maps</a>` : ''}
+        ${calendarUrl ? `<div class="actions">
+          <a class="btn-calendar" href="${escapeHtml(calendarUrl)}" target="_blank" rel="noopener noreferrer" title="Añadir al calendario"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>Calendario</a>
         </div>` : ''}
       </div>
     </article>

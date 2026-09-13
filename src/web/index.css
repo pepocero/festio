@@ -1584,14 +1584,41 @@ a:not(.btn):hover {
 }
 
 .preview-location {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.45rem;
 	font-size: 0.9rem;
 	margin: 0.5rem 0;
 }
 
-.preview-location-link {
-	color: inherit;
-	text-decoration: underline;
-	text-underline-offset: 0.15em;
+.preview-location-text {
+	flex: 1;
+	min-width: 0;
+}
+
+.preview-location-nav {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.18rem 0.45rem 0.18rem 0.3rem;
+	border-radius: 999px;
+	color: #1a73e8;
+	background: rgba(26, 115, 232, 0.12);
+	text-decoration: none;
+	font-size: 0.68rem;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.preview-location-nav svg {
+	width: 13px;
+	height: 13px;
+}
+
+.preview-location-nav:hover {
+	background: rgba(26, 115, 232, 0.2);
 }
 
 .preview-message {
