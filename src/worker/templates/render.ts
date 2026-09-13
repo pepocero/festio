@@ -48,10 +48,12 @@ export function renderPublicInvitationHtml(params: {
 	const fontsLink = googleFontsLink(config);
 
 	const eventDateFormatted = formatEventDate(invitation.event_date, invitation.timezone);
+	const hostName = invitation.host_name?.trim() ?? '';
+	const calendarTitle = hostName ? `${hostName} / ${title.trim()}` : title.trim();
 	const calendarUrl =
 		invitation.event_date
 			? buildGoogleCalendarUrl({
-					title,
+					title: calendarTitle,
 					startIso: invitation.event_date,
 					endIso: invitation.event_end_date ?? defaultEndDate(invitation.event_date),
 					timezone: invitation.timezone,
